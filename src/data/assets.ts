@@ -2,17 +2,15 @@ const localAsset = (path: string) => `${import.meta.env.BASE_URL}${path.replace(
 
 export const localAssets = {
   logos: {
-    dark: localAsset('/assets/brand/betareal-logo-dark.png'),
-    light: localAsset('/assets/brand/betareal-logo-light.png'),
-    white: localAsset('/assets/brand/betareal-logo-white.png'),
+    official: localAsset('/assets/brand/betareal-logo-official.png'),
   },
   chapters: {
     luxury: {
       hero: localAsset('/assets/chapters/luxury/interior-hero-maps.webp'),
       support: localAsset('/assets/chapters/luxury/interior-terrace.jpg'),
-      trout: localAsset('/assets/chapters/luxury/dishes/trout-pomegranate.webp'),
-      salad: localAsset('/assets/chapters/luxury/dishes/greek-salad.webp'),
-      dessert: localAsset('/assets/chapters/luxury/dishes/dessert-spiral.webp'),
+      beefStroganoff: localAsset('/assets/chapters/luxury/dishes/mg-beef-stroganoff.webp'),
+      beefFillet: localAsset('/assets/chapters/luxury/dishes/mg-beef-fillet.png'),
+      gazpacho: localAsset('/assets/chapters/luxury/dishes/mg-gazpacho.webp'),
     },
     cafe: {
       hero: localAsset('/assets/chapters/cafe/mg-hero-1.webp'),

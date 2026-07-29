@@ -1,5 +1,5 @@
 .footer {
-  background: #111;
+  background: #060a12;
   color: rgba(255, 255, 255, 0.78);
   border-top: 1px solid rgba(255, 255, 255, 0.12);
 }
@@ -10,13 +10,14 @@
   align-items: center;
   gap: 24px;
   width: var(--content);
-  min-height: 112px;
+  min-height: 88px;
   margin: 0 auto;
 }
 
 .inner img {
-  height: 30px;
+  height: 31px;
   width: auto;
+  object-fit: contain;
 }
 
 .inner p {
@@ -41,7 +42,7 @@
 @media (max-width: 760px) {
   .inner {
     grid-template-columns: 1fr;
-    padding: 28px 0;
+    padding: 22px 0;
   }
 
   .inner div {

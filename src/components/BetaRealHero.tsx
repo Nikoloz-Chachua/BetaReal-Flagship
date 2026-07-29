@@ -48,7 +48,7 @@ export function BetaRealHero({ language, text, onModelOpen }: BetaRealHeroProps)
         <p className={styles.line}>{text.line}</p>
       </div>
       <div className={styles.visual} aria-label={text.visualLabel}>
-        <div className={styles.phone}>
+        <div className={styles.phone} data-testid="hero-phone">
           <div className={styles.phoneTop} />
           <p className={styles.phoneCategory}>{text.phoneCategory}</p>
           <img

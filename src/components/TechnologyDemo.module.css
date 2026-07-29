@@ -1,13 +1,13 @@
 .section {
-  scroll-margin-top: calc(var(--header-height) + 72px);
-  padding: clamp(58px, 7vw, 96px) 0;
+  scroll-margin-top: calc(var(--header-height) + 48px);
+  padding: clamp(40px, 5vw, 68px) 0;
   background: #fff;
 }
 
 .inner {
   display: grid;
   grid-template-columns: minmax(0, 0.64fr) minmax(460px, 1fr);
-  gap: clamp(28px, 5vw, 64px);
+  gap: clamp(24px, 4vw, 44px);
   width: var(--content);
   margin: 0 auto;
 }
@@ -29,8 +29,8 @@
 .copy h2 {
   margin: 0;
   max-width: 11.5ch;
-  font-size: clamp(2.25rem, 3.6vw, 3.6rem);
-  line-height: 0.96;
+  font-size: clamp(2rem, 3vw, 3rem);
+  line-height: 1;
   overflow-wrap: normal;
   word-break: normal;
   hyphens: none;
@@ -39,9 +39,9 @@
 
 .copy span {
   display: block;
-  margin-top: 22px;
+  margin-top: 16px;
   color: var(--secondary);
-  font-size: 1.06rem;
+  font-size: 1rem;
 }
 
 .panel {
@@ -55,7 +55,7 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
-  padding: 12px;
+  padding: 10px;
   border-bottom: 1px solid var(--border);
 }
 
@@ -64,7 +64,7 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 44px;
+  min-height: 40px;
   border: 1px solid var(--border);
   border-radius: 999px;
   background: var(--surface);
@@ -79,15 +79,15 @@
 }
 
 .stage {
-  padding: 18px;
+  padding: 14px;
 }
 
 .menuState {
   display: grid;
   grid-template-columns: minmax(160px, 0.7fr) 1fr;
-  gap: 24px;
+  gap: 18px;
   align-items: center;
-  min-height: 420px;
+  min-height: 320px;
 }
 
 .menuState img {
@@ -107,8 +107,8 @@
 
 .menuState h3 {
   margin: 0 0 10px;
-  font-size: clamp(2rem, 4vw, 3.8rem);
-  line-height: 0.96;
+  font-size: clamp(1.8rem, 3.2vw, 3rem);
+  line-height: 1;
 }
 
 .menuState span {
@@ -120,7 +120,7 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 44px;
+  min-height: 40px;
   margin-top: 12px;
   border: 1px solid var(--border);
   border-radius: 999px;
@@ -138,7 +138,7 @@
 
   .copy h2 {
     max-width: 13ch;
-    font-size: clamp(2.5rem, 9vw, 4.6rem);
+    font-size: clamp(2rem, 7.5vw, 3.5rem);
   }
 }
 

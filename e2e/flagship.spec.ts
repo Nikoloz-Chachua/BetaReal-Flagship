@@ -135,6 +135,33 @@ test('responsive layouts avoid horizontal overflow and keep headings visible', a
   }
 })
 
+test('official branding and compact hero phone stay stable across key viewports', async ({ page }) => {
+  for (const size of [
+    { width: 390, height: 844, maxPhoneWidth: 292, maxPhoneHeight: 452 },
+    { width: 1280, height: 577, minPhoneWidth: 300, maxPhoneWidth: 320, minPhoneHeight: 520, maxPhoneHeight: 570 },
+    { width: 1440, height: 920, minPhoneWidth: 300, maxPhoneWidth: 320, minPhoneHeight: 520, maxPhoneHeight: 570 },
+  ]) {
+    await page.setViewportSize({ width: size.width, height: size.height })
+    await page.goto('/')
+    await expect(page.getByTestId('brand-logo-header')).toHaveAttribute('src', /\/assets\/brand\/betareal-logo-official\.png$/)
+
+    const phoneMetrics = await page.getByTestId('hero-phone').evaluate((element) => {
+      const rect = element.getBoundingClientRect()
+      return {
+        width: rect.width,
+        height: rect.height,
+        scrollHeight: element.scrollHeight,
+        clientHeight: element.clientHeight,
+      }
+    })
+    expect(phoneMetrics.width, `phone width at ${size.width}x${size.height}`).toBeLessThanOrEqual(size.maxPhoneWidth)
+    expect(phoneMetrics.height, `phone height at ${size.width}x${size.height}`).toBeLessThanOrEqual(size.maxPhoneHeight)
+    if (size.minPhoneWidth) expect(phoneMetrics.width, `phone width at ${size.width}x${size.height}`).toBeGreaterThanOrEqual(size.minPhoneWidth)
+    if (size.minPhoneHeight) expect(phoneMetrics.height, `phone height at ${size.width}x${size.height}`).toBeGreaterThanOrEqual(size.minPhoneHeight)
+    expect(phoneMetrics.scrollHeight, `phone content clips at ${size.width}x${size.height}`).toBeLessThanOrEqual(phoneMetrics.clientHeight + 1)
+  }
+})
+
 test('mobile chapter demo follows story and unavailable model controls are absent', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto('/')

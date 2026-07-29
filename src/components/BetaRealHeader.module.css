@@ -2,9 +2,9 @@
   position: sticky;
   top: 0;
   z-index: 800;
-  border-bottom: 1px solid rgba(17, 17, 17, 0.08);
-  background: rgba(246, 246, 243, 0.78);
-  backdrop-filter: blur(18px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(6, 10, 18, 0.94);
+  backdrop-filter: blur(14px);
 }
 
 .inner {
@@ -24,8 +24,9 @@
 }
 
 .logoLink img {
-  height: 30px;
+  height: 31px;
   width: auto;
+  object-fit: contain;
 }
 
 .desktopNav {
@@ -36,7 +37,7 @@
 
 .desktopNav a,
 .drawerNav a {
-  color: var(--secondary);
+  color: rgba(255, 255, 255, 0.74);
   font-size: 0.88rem;
   font-weight: 680;
   text-decoration: none;
@@ -44,7 +45,7 @@
 
 .desktopNav a:hover,
 .drawerNav a:hover {
-  color: var(--ink);
+  color: #fff;
 }
 
 .actions {
@@ -58,9 +59,9 @@
   grid-template-columns: 1fr 1fr;
   min-height: 40px;
   overflow: hidden;
-  border: 1px solid var(--border);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 999px;
-  background: var(--surface);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .lang button,
@@ -68,15 +69,15 @@
   min-width: 44px;
   border: 0;
   background: transparent;
-  color: var(--secondary);
+  color: rgba(255, 255, 255, 0.72);
   font-size: 0.78rem;
   font-weight: 800;
 }
 
 .lang button[aria-pressed='true'],
 .drawerLang button[aria-pressed='true'] {
-  background: var(--ink);
-  color: var(--surface);
+  background: #fff;
+  color: #07111f;
 }
 
 .request,
@@ -86,7 +87,7 @@
   justify-content: center;
   min-height: 44px;
   border-radius: 999px;
-  background: var(--accent);
+  background: #115ee8;
   color: #fff;
   padding: 0 18px;
   font-size: 0.88rem;
@@ -99,9 +100,10 @@
   place-items: center;
   width: 44px;
   height: 44px;
-  border: 1px solid var(--border);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 999px;
-  background: var(--surface);
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
 }
 
 .drawerBackdrop {
@@ -117,8 +119,14 @@
   width: min(380px, 100%);
   height: calc(100svh - var(--header-height));
   padding: 18px;
-  background: var(--surface);
+  background: #070b13;
   box-shadow: var(--shadow-md);
+}
+
+.drawer img {
+  height: 30px;
+  width: auto;
+  object-fit: contain;
 }
 
 .drawerTop {
@@ -133,9 +141,10 @@
   place-items: center;
   width: 44px;
   height: 44px;
-  border: 1px solid var(--border);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 999px;
-  background: var(--surface);
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
 }
 
 .drawerNav {
@@ -148,7 +157,7 @@
   display: flex;
   align-items: center;
   min-height: 52px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
   font-size: 1rem;
 }
 
@@ -157,7 +166,7 @@
   grid-template-columns: 1fr 1fr;
   min-height: 46px;
   overflow: hidden;
-  border: 1px solid var(--border);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 999px;
 }
 

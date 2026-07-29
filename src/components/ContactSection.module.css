@@ -1,14 +1,14 @@
 .section {
-  scroll-margin-top: calc(var(--header-height) + 72px);
-  padding: clamp(58px, 8vw, 108px) 0;
-  background: #111;
+  scroll-margin-top: calc(var(--header-height) + 48px);
+  padding: clamp(42px, 5vw, 74px) 0;
+  background: #060a12;
   color: #fff;
 }
 
 .inner {
   display: grid;
   grid-template-columns: minmax(260px, 0.58fr) minmax(420px, 1fr);
-  gap: clamp(28px, 5vw, 70px);
+  gap: clamp(24px, 4vw, 48px);
   width: var(--content);
   margin: 0 auto;
 }
@@ -25,15 +25,15 @@
   max-width: 10.8ch;
   margin: 0;
   color: #fff;
-  font-size: clamp(2.5rem, 5vw, 5.1rem);
-  line-height: 0.94;
+  font-size: clamp(2.1rem, 4vw, 3.8rem);
+  line-height: 0.98;
 }
 
 .copy span {
   display: block;
-  margin-top: 22px;
+  margin-top: 16px;
   color: rgba(255, 255, 255, 0.72);
-  font-size: 1.05rem;
+  font-size: 1rem;
 }
 
 .section :global(form) {

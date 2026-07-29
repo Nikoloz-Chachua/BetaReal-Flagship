@@ -6,6 +6,7 @@ import { existsSync, readFileSync } from 'node:fs'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import App from '../src/App'
 import { FlagshipPage } from '../src/pages/FlagshipPage'
+import { localAssets } from '../src/data/assets'
 import { segmentRoutes, segments } from '../src/data/segments'
 import { resetAnalyticsDedupeForTests, trackEvent } from '../src/lib/analytics'
 import { ensureModelViewerScript, launchModelViewerAR, type ModelViewerARElement } from '../src/lib/modelViewer'
@@ -76,6 +77,18 @@ describe('segment architecture', () => {
     expect(screen.getByRole('heading', { name: 'Fresh Design for Modern Dining.' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Fast Food Without Generic Design.' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Built for Busy Places.' })).toBeInTheDocument()
+  })
+
+  it('uses the official logo and high-resolution Monday Greens luxury dish assets', () => {
+    expect(localAssets.logos.official).toContain('/assets/brand/betareal-logo-official.png')
+    expect(Object.values(localAssets.logos)).toEqual([localAssets.logos.official])
+
+    const luxury = segments.find((segment) => segment.id === 'luxury-dining')
+    expect(luxury?.items.slice(0, 3).map((item) => [item.name.en, item.image])).toEqual([
+      ['Beef Stroganoff', expect.stringContaining('/assets/chapters/luxury/dishes/mg-beef-stroganoff.webp')],
+      ['Beef Fillet', expect.stringContaining('/assets/chapters/luxury/dishes/mg-beef-fillet.png')],
+      ['Gazpacho', expect.stringContaining('/assets/chapters/luxury/dishes/mg-gazpacho.webp')],
+    ])
   })
 })
 

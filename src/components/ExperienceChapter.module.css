@@ -1,7 +1,7 @@
 .chapter {
-  scroll-margin-top: calc(var(--header-height) + 72px);
-  min-height: 92svh;
-  padding: clamp(52px, 7vw, 92px) 0;
+  scroll-margin-top: calc(var(--header-height) + 48px);
+  min-height: auto;
+  padding: clamp(38px, 5vw, 66px) 0;
   background:
     linear-gradient(180deg, color-mix(in srgb, var(--chapter-bg) 90%, white), var(--chapter-bg)),
     var(--chapter-bg);
@@ -14,14 +14,14 @@
   grid-template-areas:
     'story demo'
     'media demo';
-  gap: 22px clamp(28px, 4vw, 54px);
+  gap: 18px clamp(24px, 3.4vw, 42px);
   width: var(--content);
   margin: 0 auto;
 }
 
 .story {
   grid-area: story;
-  align-self: end;
+  align-self: start;
   min-width: 0;
 }
 
@@ -29,27 +29,27 @@
   grid-area: media;
   display: grid;
   grid-template-columns: 1.2fr 0.8fr;
-  gap: 12px;
+  gap: 10px;
   align-items: end;
   min-width: 0;
 }
 
 .media img {
   width: 100%;
-  aspect-ratio: 1 / 0.78;
+  aspect-ratio: 4 / 3;
   object-fit: cover;
   border: 1px solid color-mix(in srgb, var(--chapter-ink) 12%, transparent);
   border-radius: var(--radius);
 }
 
 .media img:nth-child(2) {
-  aspect-ratio: 1 / 1.1;
+  aspect-ratio: 1 / 1;
   filter: saturate(0.92);
 }
 
 .demo {
   grid-area: demo;
-  align-self: center;
+  align-self: start;
   min-width: 0;
 }
 
@@ -67,8 +67,8 @@
   max-width: 10.5ch;
   margin: 0;
   color: var(--chapter-ink);
-  font-size: clamp(2.7rem, 5.4vw, 5.9rem);
-  line-height: 0.92;
+  font-size: clamp(2.25rem, 4.3vw, 4.65rem);
+  line-height: 0.96;
   letter-spacing: 0;
   overflow-wrap: normal;
   word-break: normal;
@@ -78,9 +78,9 @@
 
 .body {
   max-width: 520px;
-  margin: 22px 0 18px;
+  margin: 16px 0 12px;
   color: var(--chapter-muted);
-  font-size: clamp(1rem, 1.3vw, 1.14rem);
+  font-size: clamp(0.96rem, 1.1vw, 1.06rem);
   overflow-wrap: normal;
   word-break: normal;
   hyphens: none;
@@ -99,7 +99,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-top: 24px;
+  margin-top: 18px;
 }
 
 .actions a,
@@ -108,7 +108,7 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 46px;
+  min-height: 42px;
   border-radius: 999px;
   padding: 0 17px;
   font-weight: 840;
@@ -151,14 +151,14 @@
 
 .themeHeavy h2 {
   max-width: 11.8ch;
-  font-size: clamp(2.65rem, 4.45vw, 4.55rem);
+  font-size: clamp(2.2rem, 3.8vw, 3.9rem);
   line-height: 0.95;
 }
 
 .themeCondensed h2 {
   max-width: 10.8ch;
-  font-size: clamp(2.85rem, 5vw, 5.3rem);
-  line-height: 0.9;
+  font-size: clamp(2.3rem, 4.2vw, 4.25rem);
+  line-height: 0.94;
 }
 
 .editorial .inner {
@@ -202,7 +202,7 @@
       'story'
       'demo'
       'media';
-    gap: 20px;
+    gap: 18px;
   }
 
   .story {
@@ -214,14 +214,14 @@
   .themeHeavy h2,
   .themeCondensed h2 {
     max-width: min(100%, 14.5ch);
-    font-size: clamp(2.8rem, 9vw, 5.2rem);
+    font-size: clamp(2.35rem, 7.5vw, 4.15rem);
   }
 }
 
 @media (max-width: 520px) {
   .chapter {
     min-height: auto;
-    padding-block: 38px;
+    padding-block: 30px;
   }
 
   .inner {
@@ -230,13 +230,13 @@
 
   .chapter h2 {
     max-width: 11.5ch;
-    font-size: clamp(2.35rem, 12.5vw, 3.35rem);
-    line-height: 0.98;
+    font-size: clamp(2rem, 10.5vw, 2.75rem);
+    line-height: 1;
   }
 
   .body {
-    margin-block: 16px 12px;
-    font-size: 0.98rem;
+    margin-block: 12px 10px;
+    font-size: 0.95rem;
   }
 
   .media {
@@ -250,6 +250,6 @@
 
   .actions {
     display: grid;
-    margin-top: 18px;
+    margin-top: 14px;
   }
 }

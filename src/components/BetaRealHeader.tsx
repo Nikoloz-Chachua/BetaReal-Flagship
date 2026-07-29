@@ -56,7 +56,7 @@ export function BetaRealHeader({ language, setLanguage, nav }: BetaRealHeaderPro
     <header className={styles.header}>
       <div className={styles.inner}>
         <a className={styles.logoLink} href={withBasePath('/')} aria-label={nav.home}>
-          <img src={localAssets.logos.dark} width="132" height="34" alt="BetaReal" />
+          <img src={localAssets.logos.official} width="1768" height="628" alt="BetaReal" data-testid="brand-logo-header" />
         </a>
         <nav className={styles.desktopNav} aria-label={nav.primary}>
           {navContent}
@@ -93,7 +93,7 @@ export function BetaRealHeader({ language, setLanguage, nav }: BetaRealHeaderPro
             onMouseDown={(event) => event.stopPropagation()}
           >
             <div className={styles.drawerTop}>
-              <img src={localAssets.logos.dark} width="120" height="31" alt="BetaReal" />
+              <img src={localAssets.logos.official} width="1768" height="628" alt="BetaReal" data-testid="brand-logo-drawer" />
               <button type="button" onClick={() => setOpen(false)} aria-label={nav.close}>
                 <X size={22} aria-hidden="true" />
               </button>

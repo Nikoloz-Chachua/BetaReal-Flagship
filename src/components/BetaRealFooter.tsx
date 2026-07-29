@@ -5,7 +5,7 @@ export function BetaRealFooter({ line }: { line: string }) {
   return (
     <footer className={styles.footer}>
       <div className={styles.inner}>
-        <img src={localAssets.logos.white} width="128" height="33" alt="BetaReal" />
+        <img src={localAssets.logos.official} width="1768" height="628" alt="BetaReal" data-testid="brand-logo-footer" />
         <p>{line}</p>
         <div>
           <a href="mailto:betareal.ar@gmail.com">betareal.ar@gmail.com</a>
