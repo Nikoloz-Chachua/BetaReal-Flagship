@@ -4,6 +4,7 @@ import { localAssets } from '../data/assets'
 import type { Language } from '../data/types'
 import { useFocusTrap } from '../hooks/useFocusTrap'
 import { getTrackingContext, trackEvent } from '../lib/analytics'
+import { withBasePath } from '../lib/basePath'
 import styles from './BetaRealHeader.module.css'
 
 interface BetaRealHeaderProps {
@@ -54,7 +55,7 @@ export function BetaRealHeader({ language, setLanguage, nav }: BetaRealHeaderPro
   return (
     <header className={styles.header}>
       <div className={styles.inner}>
-        <a className={styles.logoLink} href="/" aria-label={nav.home}>
+        <a className={styles.logoLink} href={withBasePath('/')} aria-label={nav.home}>
           <img src={localAssets.logos.dark} width="132" height="34" alt="BetaReal" />
         </a>
         <nav className={styles.desktopNav} aria-label={nav.primary}>

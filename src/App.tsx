@@ -1,9 +1,10 @@
 import { useEffect } from 'react'
 import { isSegmentRoute } from './data/segments'
+import { stripBasePath, withBasePath } from './lib/basePath'
 import { FlagshipPage } from './pages/FlagshipPage'
 
 export default function App() {
-  const pathname = window.location.pathname
+  const pathname = stripBasePath(window.location.pathname)
   const match = pathname.match(/^\/demo\/([^/]+)\/?$/)
   const initialSegment = isSegmentRoute(match?.[1]) ? match[1] : undefined
 
@@ -43,7 +44,7 @@ function NotFound() {
           {text.title}
         </h1>
         <p style={{ color: 'var(--secondary)' }}>{text.body}</p>
-        <a href="/" style={{ color: 'var(--ink)', fontWeight: 820 }}>
+        <a href={withBasePath('/')} style={{ color: 'var(--ink)', fontWeight: 820 }}>
           {text.home}
         </a>
       </section>

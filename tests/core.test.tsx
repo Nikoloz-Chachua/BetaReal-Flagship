@@ -10,6 +10,7 @@ import { segmentRoutes, segments } from '../src/data/segments'
 import { resetAnalyticsDedupeForTests, trackEvent } from '../src/lib/analytics'
 import { ensureModelViewerScript, launchModelViewerAR, type ModelViewerARElement } from '../src/lib/modelViewer'
 import { sanitizeRestaurantParam, sanitizeTrackingParam } from '../src/lib/personalization'
+import { normalizeBasePath, stripBasePath, withBasePath } from '../src/lib/basePath'
 import {
   buildLeadMessage,
   buildMailtoUrl,
@@ -75,6 +76,16 @@ describe('segment architecture', () => {
     expect(screen.getByRole('heading', { name: 'Fresh Design for Modern Dining.' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Fast Food Without Generic Design.' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Built for Busy Places.' })).toBeInTheDocument()
+  })
+})
+
+describe('deployment base path', () => {
+  it('supports root Cloudflare hosting and the GitHub Pages preview subpath', () => {
+    expect(normalizeBasePath('/')).toBe('')
+    expect(normalizeBasePath('/BetaReal-Flagship/')).toBe('/BetaReal-Flagship')
+    expect(stripBasePath('/BetaReal-Flagship/', '/BetaReal-Flagship')).toBe('/')
+    expect(stripBasePath('/BetaReal-Flagship/demo/cafe', '/BetaReal-Flagship')).toBe('/demo/cafe')
+    expect(withBasePath('/', '/BetaReal-Flagship')).toBe('/BetaReal-Flagship/')
   })
 })
 

@@ -4,15 +4,15 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite --host 0.0.0.0",
-    "build": "npm run typecheck && vite build",
-    "preview": "vite preview --host 0.0.0.0",
+    "dev": "vite --config vite.config.ts --host 0.0.0.0",
+    "build": "npm run typecheck && vite build --config vite.config.ts",
+    "preview": "vite preview --config vite.config.ts --host 0.0.0.0",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit -p tsconfig.app.json --pretty false && tsc --noEmit -p tsconfig.node.json --pretty false",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "e2e": "playwright test",
-    "qa:screenshots": "playwright test e2e/visual.spec.ts"
+    "test": "vitest run --config vite.config.ts",
+    "test:watch": "vitest --config vite.config.ts",
+    "e2e": "playwright test --config=playwright.config.ts",
+    "qa:screenshots": "playwright test --config=playwright.config.ts e2e/visual.spec.ts"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",
