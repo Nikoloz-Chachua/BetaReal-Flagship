@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
 
-const MODEL_VIEWER_MAX_CAMERA_ORBIT = 'auto 110deg auto'
-const MODEL_VIEWER_MAX_POLAR_DEG = 110
+const MODEL_VIEWER_MAX_CAMERA_ORBIT = 'auto 70deg auto'
+const MODEL_VIEWER_MAX_POLAR_DEG = 70
 
 declare global {
   interface Window {
@@ -566,7 +566,7 @@ test('inline model thumbnails preserve card media geometry and direct gestures d
   await expect(page.getByRole('dialog').filter({ has: page.getByRole('heading', { name: 'Chocolate Croissant' }) })).toBeVisible()
 })
 
-test('every model viewer exposes the underside orbit lock and inline gestures keep rotation and zoom usable', async ({ page }) => {
+test('every model viewer keeps the camera at least 20 degrees above the support plane while rotation and zoom stay usable', async ({ page }) => {
   await installModelViewerStub(page)
   await page.setViewportSize({ width: 1280, height: 900 })
   await page.goto('/')

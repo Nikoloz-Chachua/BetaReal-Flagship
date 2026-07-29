@@ -296,7 +296,7 @@ describe('language and model loading', () => {
     expect(thumbnail.querySelector('img[alt="Chocolate Croissant"]')).toBeInTheDocument()
   })
 
-  it('applies the underside orbit limit to every rendered model-viewer surface', async () => {
+  it('keeps every rendered model-viewer camera at least 20 degrees above the support plane', async () => {
     vi.spyOn(modelViewer, 'ensureModelViewerScript').mockResolvedValue(true)
 
     render(<FlagshipPage initialSegment="cafe" />)
