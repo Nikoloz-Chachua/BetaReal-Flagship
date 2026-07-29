@@ -1,0 +1,50 @@
+.nav {
+  position: sticky;
+  top: var(--header-height);
+  z-index: 700;
+  overflow: hidden;
+  border-block: 1px solid rgba(17, 17, 17, 0.08);
+  background: rgba(246, 246, 243, 0.86);
+  backdrop-filter: blur(16px);
+}
+
+.scroller {
+  display: flex;
+  gap: 8px;
+  width: var(--content);
+  max-width: 100%;
+  min-width: 0;
+  margin: 0 auto;
+  overflow-x: auto;
+  padding: 10px 0;
+  scrollbar-width: thin;
+}
+
+.scroller a {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--secondary);
+  padding: 0 16px;
+  font-size: 0.9rem;
+  font-weight: 780;
+  text-decoration: none;
+}
+
+.scroller a.active {
+  border-color: var(--accent);
+  background: var(--ink);
+  color: var(--surface);
+}
+
+@media (max-width: 520px) {
+  .scroller {
+    width: 100%;
+    padding-inline: 12px;
+  }
+}

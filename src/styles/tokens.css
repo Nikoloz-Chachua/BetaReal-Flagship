@@ -1,0 +1,19 @@
+:root {
+  color-scheme: light;
+  --bg: #f6f6f3;
+  --surface: #ffffff;
+  --ink: #111111;
+  --secondary: #696969;
+  --border: rgba(17, 17, 17, 0.12);
+  --accent: #4f817e;
+  --accent-light: #dceae8;
+  --focus: #174fcd;
+  --shadow-sm: 0 10px 30px rgba(17, 17, 17, 0.08);
+  --shadow-md: 0 24px 70px rgba(17, 17, 17, 0.14);
+  --radius: 8px;
+  --radius-lg: 18px;
+  --header-height: 68px;
+  --content: min(1160px, calc(100vw - 40px));
+  --font-sans: Inter, "Noto Sans Georgian", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-serif: "Georgia", "Noto Serif Georgian", serif;
+}

@@ -1,0 +1,61 @@
+export const localAssets = {
+  logos: {
+    dark: '/assets/brand/betareal-logo-dark.png',
+    light: '/assets/brand/betareal-logo-light.png',
+    white: '/assets/brand/betareal-logo-white.png',
+  },
+  chapters: {
+    luxury: {
+      hero: '/assets/chapters/luxury/interior-hero-maps.webp',
+      support: '/assets/chapters/luxury/interior-terrace.jpg',
+      trout: '/assets/chapters/luxury/dishes/trout-pomegranate.webp',
+      salad: '/assets/chapters/luxury/dishes/greek-salad.webp',
+      dessert: '/assets/chapters/luxury/dishes/dessert-spiral.webp',
+    },
+    cafe: {
+      hero: '/assets/chapters/cafe/mg-hero-1.webp',
+      support: '/assets/chapters/cafe/mg-hero-2.webp',
+      detail: '/assets/chapters/cafe/mg-hero-3.webp',
+      chia: '/assets/chapters/cafe/items/chia-fruit-bowl.webp',
+      bagel: '/assets/chapters/cafe/items/scrambled-bagel.webp',
+      icedCoffee: '/assets/chapters/cafe/items/iced-coffee.webp',
+    },
+    fastCasual: {
+      doubleSmashed: '/assets/chapters/fast-casual/double-smashed.webp',
+      giantBurger: '/assets/chapters/fast-casual/giant-burger.webp',
+      wings: '/assets/chapters/fast-casual/chicken-wings-6pcs.webp',
+    },
+    social: {
+      cheeseburger: '/assets/chapters/social/cheeseburger.webp',
+      signature: '/assets/chapters/social/pipes-signature-burger.webp',
+      quesadilla: '/assets/chapters/social/quesadilla.webp',
+    },
+  },
+} as const
+
+export const modelAssets = {
+  burger: {
+    name: 'BigBurger',
+    nameKa: 'ბიგბურგერი',
+    glb: 'https://pub-3c68559de18f4aee94d127e180937bdd.r2.dev/druidi_balanced_30k_2k.glb',
+    usdz: 'https://pub-3c68559de18f4aee94d127e180937bdd.r2.dev/druidi_balanced_30k_2k.usdz',
+    poster: '/assets/models/burger_poster.webp',
+    scale: 1.5181,
+  },
+  hotDog: {
+    name: 'Hot Dog',
+    nameKa: 'ჰოთ დოგი',
+    glb: 'https://pub-3c68559de18f4aee94d127e180937bdd.r2.dev/hot_dog_draco.glb',
+    usdz: 'https://pub-3c68559de18f4aee94d127e180937bdd.r2.dev/hot_dog.usdz',
+    poster: '/assets/models/hot_dog_poster.webp',
+    scale: 0.9312,
+  },
+  croissant: {
+    name: 'Croissant',
+    nameKa: 'კრუასანი',
+    glb: 'https://pub-3c68559de18f4aee94d127e180937bdd.r2.dev/croissant_draco.glb',
+    usdz: 'https://pub-3c68559de18f4aee94d127e180937bdd.r2.dev/croissant.usdz',
+    poster: '/assets/models/croissant_poster.webp',
+    scale: 0.9,
+  },
+} as const
