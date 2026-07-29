@@ -5,6 +5,7 @@ export type AnalyticsEventName =
   | 'experience_section_viewed'
   | 'full_demo_opened'
   | 'model_viewer_started'
+  | 'inline_model_thumbnail_interacted'
   | 'ar_button_clicked'
   | 'request_demo_clicked'
   | 'contact_form_started'
@@ -14,6 +15,7 @@ export type AnalyticsEventName =
 export interface AnalyticsPayload {
   segment?: SegmentRoute
   demo?: string
+  item?: string
   source?: string
   campaign?: string
 }
@@ -43,6 +45,8 @@ export function trackEvent(name: AnalyticsEventName, payload: AnalyticsPayload =
     source: sanitizeTrackingParam(payload.source),
     campaign: sanitizeTrackingParam(payload.campaign),
   }
+  const item = sanitizeTrackingParam(payload.item)
+  if (item) safePayload.item = item
   const eventRecord = { event: name, ...safePayload }
   window.dataLayer?.push(eventRecord)
   window.dispatchEvent(new CustomEvent('betareal:analytics', { detail: eventRecord }))

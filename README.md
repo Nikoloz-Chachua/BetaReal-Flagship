@@ -17,7 +17,7 @@ Standalone Vite + React + TypeScript sales/demo platform for `https://yourrestau
 - Segment content lives in `src/data/segments.ts`; adding a fifth segment should only require config, assets/theme, and optional preview data.
 - Public UI copy is in `src/data/i18n.ts`.
 - Analytics helper is in `src/lib/analytics.ts`; it pushes to `window.dataLayer` when available and dispatches a `betareal:analytics` `CustomEvent`.
-- 3D/AR is poster-first. The Google model-viewer script is injected only after an explicit visitor action.
+- 3D/AR is poster-first. The Google model-viewer script is injected when a model-enabled card nears the viewport or after an explicit 3D/AR visitor action.
 
 ## Cloudflare Pages
 

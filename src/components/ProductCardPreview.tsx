@@ -1,10 +1,12 @@
 import { Box, Plus, ScanLine } from 'lucide-react'
-import type { Language, PreviewItem } from '../data/types'
+import type { Language, PreviewItem, SegmentRoute } from '../data/types'
+import { InlineModelThumbnail } from './InlineModelThumbnail'
 import styles from './DemoPreview.module.css'
 
 interface ProductCardPreviewProps {
   item: PreviewItem
   language: Language
+  segment?: SegmentRoute
   labels: {
     view3d: string
     viewAr: string
@@ -15,14 +17,24 @@ interface ProductCardPreviewProps {
   onAR: (item: PreviewItem) => void
 }
 
-export function ProductCardPreview({ item, language, labels, onDetails, onModel, onAR }: ProductCardPreviewProps) {
+export function ProductCardPreview({ item, language, segment, labels, onDetails, onModel, onAR }: ProductCardPreviewProps) {
   const modelLabel = language === 'ka' ? item.name.ka : item.name.en
 
   return (
     <article className={styles.card}>
-      <button className={styles.imageButton} type="button" onClick={() => onDetails(item)} aria-label={`${labels.details}: ${item.name[language]}`}>
-        <img src={item.image} alt={item.name[language]} loading="lazy" width="900" height="675" />
-      </button>
+      {item.model ? (
+        <InlineModelThumbnail
+          model={item.model}
+          itemId={item.id}
+          label={item.name[language]}
+          language={language}
+          segment={segment}
+        />
+      ) : (
+        <button className={styles.imageButton} type="button" onClick={() => onDetails(item)} aria-label={`${labels.details}: ${item.name[language]}`}>
+          <img src={item.image} alt={item.name[language]} loading="lazy" width="900" height="675" />
+        </button>
+      )}
       <div className={styles.cardBody}>
         <div className={styles.cardTop}>
           <p>{item.category[language]}</p>

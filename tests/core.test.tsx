@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { act, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createHash } from 'node:crypto'
 import { existsSync, readFileSync } from 'node:fs'
@@ -10,6 +10,7 @@ import { localAssets } from '../src/data/assets'
 import { segmentRoutes, segments } from '../src/data/segments'
 import { resetAnalyticsDedupeForTests, trackEvent } from '../src/lib/analytics'
 import { ensureModelViewerScript, launchModelViewerAR, type ModelViewerARElement } from '../src/lib/modelViewer'
+import * as modelViewer from '../src/lib/modelViewer'
 import { sanitizeRestaurantParam, sanitizeTrackingParam } from '../src/lib/personalization'
 import { normalizeBasePath, stripBasePath, withBasePath } from '../src/lib/basePath'
 import {
@@ -23,9 +24,31 @@ import headersText from '../public/_headers?raw'
 import indexHtml from '../index.html?raw'
 
 class MockIntersectionObserver {
+  static instances: MockIntersectionObserver[] = []
+  callback: IntersectionObserverCallback
+  elements: Element[] = []
   observe = vi.fn()
   unobserve = vi.fn()
   disconnect = vi.fn()
+
+  constructor(callback: IntersectionObserverCallback) {
+    this.callback = callback
+    this.observe = vi.fn((element: Element) => {
+      this.elements.push(element)
+    })
+    MockIntersectionObserver.instances.push(this)
+  }
+
+  trigger(isIntersecting = true) {
+    this.callback(
+      this.elements.map((target) => ({
+        target,
+        isIntersecting,
+        intersectionRatio: isIntersecting ? 1 : 0,
+      })) as IntersectionObserverEntry[],
+      this as unknown as IntersectionObserver,
+    )
+  }
 }
 
 function popupHandle() {
@@ -51,6 +74,8 @@ function decodedWhatsAppText(url: string) {
 
 beforeEach(() => {
   vi.restoreAllMocks()
+  MockIntersectionObserver.instances = []
+  HTMLElement.prototype.scrollIntoView = vi.fn()
   document.head.querySelectorAll('script[data-betareal-model-viewer]').forEach((script) => script.remove())
   window.history.replaceState({}, '', '/')
   window.dataLayer = []
@@ -58,6 +83,12 @@ beforeEach(() => {
   vi.stubGlobal('IntersectionObserver', MockIntersectionObserver)
   vi.spyOn(window, 'open').mockImplementation(() => null)
 })
+
+function triggerObservedInlineModels() {
+  act(() => {
+    MockIntersectionObserver.instances.forEach((observer) => observer.trigger())
+  })
+}
 
 describe('segment architecture', () => {
   it('defines all configured routes and hashes', () => {
@@ -165,6 +196,83 @@ describe('language and model loading', () => {
     expect(retryScript).toBeInTheDocument()
     retryScript?.dispatchEvent(new Event('error'))
     await expect(second).resolves.toBe(false)
+  })
+
+  it('keeps non-model cards as image detail buttons', async () => {
+    render(<FlagshipPage initialSegment="cafe" />)
+    const cafeDemo = screen.getByTestId('modern-cafe-demo')
+    const detailButton = within(cafeDemo).getAllByRole('button', { name: 'Details: Chia Fruit Bowl' })[0]
+    expect(within(detailButton).getByRole('img', { name: 'Chia Fruit Bowl' })).toBeInTheDocument()
+    expect(within(cafeDemo).queryByTestId('inline-model-cafe-chia')).not.toBeInTheDocument()
+
+    await userEvent.click(detailButton)
+    const dialog = screen.getByRole('dialog')
+    expect(dialog).toBeVisible()
+    expect(within(dialog).getByRole('heading', { name: 'Chia Fruit Bowl' })).toBeInTheDocument()
+  })
+
+  it('lazy-loads inline model thumbnails only after a model card enters the observer', async () => {
+    render(<FlagshipPage initialSegment="cafe" />)
+    const thumbnail = screen.getByTestId('inline-model-cafe-croissant')
+    expect(thumbnail).toHaveAttribute('data-inline-model-state', 'initial')
+    expect(document.querySelector('script[data-betareal-model-viewer]')).toBeNull()
+    expect(thumbnail.querySelector('model-viewer')).toBeNull()
+
+    triggerObservedInlineModels()
+    await waitFor(() => expect(document.querySelector('script[data-betareal-model-viewer]')).toBeInTheDocument())
+    expect(thumbnail).toHaveAttribute('data-inline-model-state', 'loading')
+
+    const script = document.querySelector<HTMLScriptElement>('script[data-betareal-model-viewer]')
+    script?.dispatchEvent(new Event('error'))
+    await waitFor(() => expect(thumbnail).toHaveAttribute('data-inline-model-state', 'failure'))
+    expect(thumbnail.querySelector('model-viewer')).toBeNull()
+    expect(within(thumbnail).getByRole('img', { name: 'Chocolate Croissant' })).toBeInTheDocument()
+  })
+
+  it('reveals a loaded inline model as the only visible thumbnail layer', async () => {
+    vi.spyOn(modelViewer, 'ensureModelViewerScript').mockResolvedValue(true)
+
+    render(<FlagshipPage initialSegment="cafe" />)
+    const thumbnail = screen.getByTestId('inline-model-cafe-croissant')
+    triggerObservedInlineModels()
+
+    const viewer = await waitFor(() => {
+      const element = thumbnail.querySelector('model-viewer')
+      if (!element) throw new Error('inline model-viewer was not rendered')
+      return element
+    })
+    act(() => {
+      viewer.dispatchEvent(new Event('load', { bubbles: true }))
+    })
+    await waitFor(() => expect(thumbnail).toHaveAttribute('data-inline-model-state', 'ready'))
+    expect(viewer).toHaveAttribute('camera-controls', 'true')
+    expect(viewer).toHaveAttribute('touch-action', 'pan-y')
+    expect(viewer).toHaveAttribute('auto-rotate', 'true')
+    expect(viewer).not.toHaveAttribute('poster')
+    expect(thumbnail.querySelector('img[alt="Chocolate Croissant"]')).toBeInTheDocument()
+  })
+
+  it('tracks only the first inline model thumbnail interaction per rendered item', async () => {
+    vi.spyOn(modelViewer, 'ensureModelViewerScript').mockResolvedValue(true)
+    const events: Array<Record<string, string | undefined>> = []
+    window.addEventListener('betareal:analytics', (event) => {
+      events.push((event as CustomEvent<Record<string, string | undefined>>).detail)
+    })
+
+    render(<FlagshipPage initialSegment="cafe" />)
+    const thumbnail = screen.getByTestId('inline-model-cafe-croissant')
+    triggerObservedInlineModels()
+    const viewer = await waitFor(() => {
+      const element = thumbnail.querySelector('model-viewer')
+      if (!element) throw new Error('inline model-viewer was not rendered')
+      return element
+    })
+
+    viewer.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+    viewer.dispatchEvent(new WheelEvent('wheel', { bubbles: true }))
+    const inlineEvents = events.filter((event) => event.event === 'inline_model_thumbnail_interacted')
+    expect(inlineEvents).toHaveLength(1)
+    expect(inlineEvents[0]).toMatchObject({ segment: 'cafe', item: 'cafe-croissant' })
   })
 })
 

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, test, type Page } from '@playwright/test'
 
 declare global {
   interface Window {
@@ -6,22 +6,49 @@ declare global {
   }
 }
 
+async function installModelViewerStub(page: Page, options: { failScript?: boolean; autoLoad?: boolean } = {}) {
+  await page.route('https://ajax.googleapis.com/ajax/libs/model-viewer/**', (route) => {
+    if (options.failScript) {
+      void route.abort()
+      return
+    }
+    const body = `
+      if (!window.customElements.get('model-viewer')) {
+        window.customElements.define('model-viewer', class extends HTMLElement {
+          activateAR = async () => undefined;
+          connectedCallback() {
+            if (${options.autoLoad !== false}) {
+              window.setTimeout(() => this.dispatchEvent(new Event('load')), 0);
+            }
+          }
+        });
+      }
+    `
+    void route.fulfill({ status: 200, contentType: 'text/javascript', body })
+  })
+}
+
 test('deep links, navigation, lazy model loading, drawer, modal, and blocked form fallback work', async ({ page }) => {
   const consoleErrors: string[] = []
   page.on('console', (message) => {
     if (message.type() === 'error') consoleErrors.push(message.text())
   })
+  await installModelViewerStub(page)
   await page.addInitScript(() => {
     window.open = () => null
   })
 
-  await page.goto('/?segment=cafe&restaurant=Demo%20Bistro&utm_source=qa&utm_campaign=smoke')
+  await page.goto('/?restaurant=Demo%20Bistro&utm_source=qa&utm_campaign=smoke')
   await expect(page.getByRole('heading', { name: 'YOUR MENU, BEYOND THE SCREEN.' })).toBeVisible()
   await expect(page.getByText('Demo Bistro')).toBeVisible()
   await expect(page.locator('script[data-betareal-model-viewer]')).toHaveCount(0)
 
   await page.getByRole('navigation', { name: 'Restaurant experiences' }).getByRole('link', { name: 'Fast Casual', exact: true }).click()
   await expect(page.locator('#premium-fast-casual')).toBeInViewport()
+  await page.waitForTimeout(180)
+  await page.getByTestId('inline-model-fast-bigburger').evaluate((element) => element.scrollIntoView({ block: 'center', behavior: 'instant' }))
+  await expect(page.locator('script[data-betareal-model-viewer]')).toHaveCount(1)
+  await expect(page.getByTestId('inline-model-fast-bigburger')).toHaveAttribute('data-inline-model-state', 'ready')
 
   await page.getByRole('button', { name: /View a Dish in 3D/ }).click()
   const modelDialog = page.getByRole('dialog').filter({ has: page.getByRole('heading', { name: 'BigBurger' }) })
@@ -185,6 +212,92 @@ test('mobile chapter demo follows story and unavailable model controls are absen
   await expect(page.locator('#modern-cafe article button:disabled')).toHaveCount(0)
   await expect(page.getByRole('button', { name: 'View in 3D: Chia Fruit Bowl' })).toHaveCount(0)
   await expect(page.getByTestId('modern-cafe-demo').getByRole('button', { name: 'View in 3D: Chocolate Croissant' })).toBeVisible()
+})
+
+test('inline model thumbnails preserve card media geometry and direct gestures do not open dialogs', async ({ page }) => {
+  await installModelViewerStub(page)
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.goto('/')
+  await page.locator('#modern-cafe').evaluate((element) => element.scrollIntoView({ block: 'start', behavior: 'instant' }))
+
+  const cafeDemo = page.getByTestId('modern-cafe-demo')
+  const nonModelButton = cafeDemo.getByRole('button', { name: 'Details: Chia Fruit Bowl' })
+  await expect(nonModelButton.getByRole('img', { name: 'Chia Fruit Bowl' })).toBeVisible()
+  await expect(cafeDemo.getByTestId('inline-model-cafe-chia')).toHaveCount(0)
+
+  const thumbnail = page.getByTestId('inline-model-cafe-croissant')
+  await thumbnail.scrollIntoViewIfNeeded()
+  await expect(thumbnail).toHaveAttribute('data-inline-model-state', 'ready')
+  const viewer = thumbnail.locator('model-viewer')
+  await expect(viewer).toHaveAttribute('camera-controls', 'true')
+  await expect(viewer).toHaveAttribute('touch-action', 'pan-y')
+  await expect(viewer).toHaveAttribute('auto-rotate', 'true')
+  await expect(viewer).not.toHaveAttribute('poster')
+
+  const layerRects = await thumbnail.evaluate((element) => {
+    const poster = element.querySelector('img')
+    const viewer = element.querySelector('model-viewer')
+    if (!poster || !viewer) return null
+    const frameRect = element.getBoundingClientRect()
+    const posterRect = poster.getBoundingClientRect()
+    const viewerRect = viewer.getBoundingClientRect()
+    const posterStyle = getComputedStyle(poster)
+    const viewerStyle = getComputedStyle(viewer)
+    return {
+      frame: { width: frameRect.width, height: frameRect.height },
+      poster: { width: posterRect.width, height: posterRect.height, visibility: posterStyle.visibility, opacity: posterStyle.opacity },
+      viewer: { width: viewerRect.width, height: viewerRect.height, visibility: viewerStyle.visibility, opacity: viewerStyle.opacity },
+      overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+    }
+  })
+  expect(layerRects).not.toBeNull()
+  expect(layerRects!.poster.width).toBeCloseTo(layerRects!.frame.width, 1)
+  expect(layerRects!.poster.height).toBeCloseTo(layerRects!.frame.height, 1)
+  expect(layerRects!.viewer.width).toBeCloseTo(layerRects!.frame.width, 1)
+  expect(layerRects!.viewer.height).toBeCloseTo(layerRects!.frame.height, 1)
+  expect(layerRects!.poster.visibility).toBe('hidden')
+  expect(Number(layerRects!.poster.opacity)).toBe(0)
+  expect(layerRects!.viewer.visibility).toBe('visible')
+  expect(Number(layerRects!.viewer.opacity)).toBe(1)
+  expect(layerRects!.overflow).toBe(false)
+
+  await viewer.dispatchEvent('pointerdown')
+  await viewer.dispatchEvent('pointermove')
+  await viewer.dispatchEvent('pointerup')
+  await expect(page.getByRole('dialog')).toHaveCount(0)
+
+  await cafeDemo.getByRole('button', { name: 'View in 3D: Chocolate Croissant' }).click()
+  await expect(page.getByRole('dialog').filter({ has: page.getByRole('heading', { name: 'Chocolate Croissant' }) })).toBeVisible()
+  await page.keyboard.press('Escape')
+  await cafeDemo.getByRole('button', { name: 'Place in AR: Chocolate Croissant' }).click()
+  await expect(page.getByRole('dialog').filter({ has: page.getByRole('heading', { name: 'Chocolate Croissant' }) })).toBeVisible()
+})
+
+test('inline model thumbnails keep only the poster painted while loading or failed', async ({ page }) => {
+  await installModelViewerStub(page, { autoLoad: false })
+  await page.goto('/')
+  await page.locator('#premium-fast-casual').evaluate((element) => element.scrollIntoView({ block: 'start', behavior: 'instant' }))
+  const loadingThumbnail = page.getByTestId('inline-model-fast-bigburger')
+  await expect(loadingThumbnail).toHaveAttribute('data-inline-model-state', 'loading')
+  const loadingState = await loadingThumbnail.evaluate((element) => {
+    const poster = element.querySelector('img')
+    const viewer = element.querySelector('model-viewer')
+    if (!poster || !viewer) return null
+    return {
+      posterVisibility: getComputedStyle(poster).visibility,
+      viewerVisibility: getComputedStyle(viewer).visibility,
+      viewerPointerEvents: getComputedStyle(viewer).pointerEvents,
+    }
+  })
+  expect(loadingState).toEqual({ posterVisibility: 'visible', viewerVisibility: 'hidden', viewerPointerEvents: 'none' })
+
+  await page.reload()
+  await page.locator('#premium-fast-casual').evaluate((element) => element.scrollIntoView({ block: 'start', behavior: 'instant' }))
+  const failedThumbnail = page.getByTestId('inline-model-fast-bigburger')
+  await failedThumbnail.locator('model-viewer').dispatchEvent('error')
+  await expect(failedThumbnail).toHaveAttribute('data-inline-model-state', 'failure')
+  await expect(failedThumbnail.locator('model-viewer')).toHaveCSS('visibility', 'hidden')
+  await expect(failedThumbnail.getByRole('img', { name: 'BigBurger' })).toBeVisible()
 })
 
 test('experience navigation active state follows nearest chapter at mobile and desktop', async ({ page }) => {

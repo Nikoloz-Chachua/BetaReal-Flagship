@@ -38,6 +38,7 @@ export function DemoPreview({ segment, language, labels, onModelOpen, onAROpen }
             key={item.id}
             item={item}
             language={language}
+            segment={segment.route}
             labels={labels}
             onDetails={setSelected}
             onModel={onModelOpen}
