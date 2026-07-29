@@ -99,7 +99,7 @@ describe('segment architecture', () => {
       'premium-fast-casual',
       'social-dining',
     ])
-    expect(segments.every((segment) => segment.items.length >= 3)).toBe(true)
+    expect(segments.every((segment) => segment.items.length >= 2)).toBe(true)
   })
 
   it('renders all chapter headings from config', () => {
@@ -110,15 +110,17 @@ describe('segment architecture', () => {
     expect(screen.getByRole('heading', { name: 'Built for Busy Places.' })).toBeInTheDocument()
   })
 
-  it('uses the official logo and high-resolution Monday Greens luxury dish assets', () => {
+  it('uses the official logo and keeps the luxury preview honest', () => {
     expect(localAssets.logos.official).toContain('/assets/brand/betareal-logo-official.png')
     expect(Object.values(localAssets.logos)).toEqual([localAssets.logos.official])
 
     const luxury = segments.find((segment) => segment.id === 'luxury-dining')
-    expect(luxury?.items.slice(0, 3).map((item) => [item.name.en, item.image])).toEqual([
-      ['Beef Stroganoff', expect.stringContaining('/assets/chapters/luxury/dishes/mg-beef-stroganoff.webp')],
-      ['Beef Fillet', expect.stringContaining('/assets/chapters/luxury/dishes/mg-beef-fillet.png')],
-      ['Gazpacho', expect.stringContaining('/assets/chapters/luxury/dishes/mg-gazpacho.webp')],
+    expect(luxury?.items.map((item) => item.name.en)).toEqual(['Beef Fillet', 'Chocolate Croissant'])
+    expect(luxury?.items.map((item) => item.name.en)).not.toContain('Beef Stroganoff')
+    expect(luxury?.items.map((item) => item.name.en)).not.toContain('Gazpacho')
+    expect(luxury?.items.map((item) => [item.name.en, item.image, Boolean(item.model)])).toEqual([
+      ['Beef Fillet', expect.stringContaining('/assets/chapters/luxury/dishes/mg-beef-fillet.png'), false],
+      ['Chocolate Croissant', expect.stringContaining('/assets/models/croissant_poster.webp'), true],
     ])
   })
 })
@@ -181,6 +183,27 @@ describe('language and model loading', () => {
     expect(screen.queryAllByRole('button', { name: /^3D$/ })).toHaveLength(0)
     expect(screen.getAllByRole('button', { name: 'View in 3D: Chocolate Croissant' }).length).toBeGreaterThan(0)
     expect(screen.queryByRole('button', { name: 'View in 3D: Chia Fruit Bowl' })).not.toBeInTheDocument()
+  })
+
+  it('renders the hero phone as an inline model viewer without the removed orbit badge', async () => {
+    vi.spyOn(modelViewer, 'ensureModelViewerScript').mockResolvedValue(true)
+
+    render(<FlagshipPage />)
+    expect(screen.queryByText('Real model after tap')).not.toBeInTheDocument()
+    const heroViewer = screen.getByTestId('inline-model-hero-bigburger')
+    expect(heroViewer).toHaveAttribute('data-inline-model-state', 'initial')
+    expect(within(heroViewer).getByRole('img', { name: 'BigBurger' })).toBeInTheDocument()
+
+    triggerObservedInlineModels()
+    const viewer = await waitFor(() => {
+      const element = heroViewer.querySelector('model-viewer')
+      if (!element) throw new Error('hero model-viewer was not rendered')
+      return element
+    })
+    expect(viewer).toHaveAttribute('src', expect.stringContaining('druidi_balanced_30k_2k.glb'))
+    expect(viewer).toHaveAttribute('camera-controls', 'true')
+    expect(viewer).toHaveAttribute('touch-action', 'pan-y')
+    expect(viewer).not.toHaveAttribute('poster')
   })
 
   it('resets model-viewer script loading after a network failure', async () => {

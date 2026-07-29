@@ -29,10 +29,10 @@ export function DemoPreview({ segment, language, labels, onModelOpen, onAROpen }
   const [selected, setSelected] = useState<PreviewItem | null>(null)
 
   return (
-    <div className={styles.preview}>
+    <div className={styles.preview} data-layout={segment.theme.layout}>
       <RestaurantHeaderPreview segment={segment} language={language} />
       <CategoryPreview categories={segment.categories} language={language} />
-      <div className={styles.grid} data-layout={segment.theme.layout}>
+      <div className={styles.grid} data-layout={segment.theme.layout} data-testid={`${segment.id}-preview-grid`}>
         {segment.items.map((item) => (
           <ProductCardPreview
             key={item.id}

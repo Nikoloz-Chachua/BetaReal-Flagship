@@ -13,6 +13,8 @@ interface InlineModelThumbnailProps {
   label: string
   language: Language
   segment?: SegmentRoute
+  className?: string
+  ariaLabel?: string
 }
 
 type InlineModelState = 'initial' | 'loading' | 'ready' | 'failure'
@@ -24,7 +26,7 @@ function thumbnailCameraFor(model: ModelAsset) {
   return { orbit: '20deg 66deg 96%', fov: '25deg' }
 }
 
-export function InlineModelThumbnail({ model, itemId, label, language, segment }: InlineModelThumbnailProps) {
+export function InlineModelThumbnail({ model, itemId, label, language, segment, className = '', ariaLabel }: InlineModelThumbnailProps) {
   const [hasEnteredViewport, setHasEnteredViewport] = useState(false)
   const [scriptReady, setScriptReady] = useState(false)
   const [state, setState] = useState<InlineModelState>('initial')
@@ -119,11 +121,11 @@ export function InlineModelThumbnail({ model, itemId, label, language, segment }
   return (
     <div
       ref={rootRef}
-      className={`${styles.mediaFrame} ${styles.inlineModel} ${styles[`inlineModel-${state}`]}`}
+      className={`${styles.mediaFrame} ${styles.inlineModel} ${styles[`inlineModel-${state}`]} ${className}`.trim()}
       data-inline-model-state={state}
       data-testid={`inline-model-${itemId}`}
       role="group"
-      aria-label={`${label} interactive 3D thumbnail`}
+      aria-label={ariaLabel ?? `${label} interactive 3D thumbnail`}
       aria-describedby={hintId}
       onClick={stopCardActivation}
       onPointerDown={stopCardActivation}

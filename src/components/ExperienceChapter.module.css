@@ -1,4 +1,7 @@
 .chapter {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   scroll-margin-top: calc(var(--header-height) + 48px);
   min-height: auto;
   padding: clamp(38px, 5vw, 66px) 0;
@@ -8,7 +11,22 @@
   color: var(--chapter-ink);
 }
 
+.chapter::before,
+.chapter::after {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  content: '';
+}
+
+.chapter::after {
+  opacity: 0.5;
+}
+
 .inner {
+  position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: minmax(280px, 0.58fr) minmax(440px, 1fr);
   grid-template-areas:
@@ -161,12 +179,81 @@
   line-height: 0.94;
 }
 
+.chapter.editorial {
+  background:
+    radial-gradient(circle at 82% 13%, rgba(217, 180, 110, 0.34), transparent 25%),
+    radial-gradient(circle at 10% 22%, rgba(242, 201, 209, 0.18), transparent 28%),
+    linear-gradient(135deg, #2a0813 0%, #3f0d1b 52%, #220710 100%);
+}
+
+.chapter.editorial::before {
+  background:
+    repeating-radial-gradient(circle at 18% 18%, rgba(255, 246, 236, 0.09) 0 1px, transparent 1px 18px),
+    radial-gradient(ellipse at 72% 72%, rgba(217, 180, 110, 0.18), transparent 36%);
+}
+
+.chapter.editorial::after {
+  background:
+    linear-gradient(115deg, transparent 0 35%, rgba(255, 246, 236, 0.06) 35% 36%, transparent 36% 100%),
+    radial-gradient(ellipse at 24% 74%, rgba(242, 201, 209, 0.12), transparent 28%);
+}
+
 .editorial .inner {
   grid-template-columns: minmax(280px, 0.64fr) minmax(460px, 1fr);
 }
 
+.editorial .kicker,
+.editorial .concept {
+  color: #d9b46e;
+}
+
+.editorial .body {
+  color: #f2cbc7;
+}
+
+.editorial .note {
+  color: #fff6ec;
+}
+
+.editorial .actions a {
+  background: #fff6ec;
+  color: #3f0d1b;
+}
+
+.editorial .actions button {
+  border-color: rgba(217, 180, 110, 0.44);
+  background: rgba(255, 246, 236, 0.94);
+  color: #3f0d1b;
+}
+
+.chapter.cafe {
+  background:
+    radial-gradient(circle at 14% 18%, rgba(221, 231, 203, 0.9), transparent 27%),
+    radial-gradient(circle at 88% 20%, rgba(255, 255, 255, 0.72), transparent 24%),
+    linear-gradient(180deg, #fbf8ee 0%, #edf1df 100%);
+}
+
+.chapter.cafe::before {
+  background:
+    linear-gradient(135deg, transparent 0 47%, rgba(109, 132, 102, 0.09) 47% 48%, transparent 48% 100%),
+    radial-gradient(ellipse at 70% 78%, rgba(155, 186, 153, 0.24), transparent 34%);
+}
+
 .cafe .inner {
   align-items: center;
+}
+
+.chapter.poster {
+  background:
+    repeating-linear-gradient(135deg, rgba(214, 58, 37, 0.12) 0 8px, transparent 8px 24px),
+    radial-gradient(circle at 84% 18%, rgba(246, 197, 68, 0.55), transparent 26%),
+    linear-gradient(180deg, #f7dcae 0%, #efb373 100%);
+}
+
+.chapter.poster::before {
+  background-image: radial-gradient(rgba(34, 20, 11, 0.16) 1px, transparent 1px);
+  background-size: 18px 18px;
+  opacity: 0.36;
 }
 
 .poster .media img {
@@ -178,8 +265,35 @@
   transform: rotate(2deg);
 }
 
-.industrial .chapter {
-  background: var(--chapter-bg);
+.chapter.industrial {
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    radial-gradient(circle at 85% 16%, rgba(242, 99, 44, 0.22), transparent 24%),
+    linear-gradient(180deg, #333a40 0%, #23282d 100%);
+  color: #f8f2e9;
+  background-size: 28px 28px, 28px 28px, auto, auto;
+}
+
+.chapter.industrial::before {
+  background:
+    repeating-linear-gradient(0deg, transparent 0 16px, rgba(45, 127, 195, 0.16) 16px 18px),
+    radial-gradient(circle at 15% 72%, rgba(45, 127, 195, 0.22), transparent 25%);
+}
+
+.industrial .story,
+.industrial .story h2,
+.industrial .note {
+  color: #f8f2e9;
+}
+
+.industrial .body,
+.industrial .concept {
+  color: #d6dde2;
+}
+
+.industrial .kicker {
+  color: #ff9a5f;
 }
 
 .industrial .media {

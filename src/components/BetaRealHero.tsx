@@ -2,6 +2,7 @@ import { ArrowDown, Rotate3D } from 'lucide-react'
 import { modelAssets } from '../data/assets'
 import type { Language } from '../data/types'
 import { getTrackingContext, trackEvent } from '../lib/analytics'
+import { InlineModelThumbnail } from './InlineModelThumbnail'
 import styles from './BetaRealHero.module.css'
 
 interface BetaRealHeroProps {
@@ -16,7 +17,6 @@ interface BetaRealHeroProps {
     phoneTitle: string
     phoneCategory: string
     visualLabel: string
-    orbit: string
   }
   onModelOpen: () => void
 }
@@ -51,11 +51,17 @@ export function BetaRealHero({ language, text, onModelOpen }: BetaRealHeroProps)
         <div className={styles.phone} data-testid="hero-phone">
           <div className={styles.phoneTop} />
           <p className={styles.phoneCategory}>{text.phoneCategory}</p>
-          <img
-            src={modelAssets.burger.poster}
-            alt={language === 'ka' ? modelAssets.burger.nameKa : modelAssets.burger.name}
-            width="900"
-            height="900"
+          <InlineModelThumbnail
+            model={modelAssets.burger}
+            itemId="hero-bigburger"
+            label={language === 'ka' ? modelAssets.burger.nameKa : modelAssets.burger.name}
+            language={language}
+            className={styles.phoneModelFrame}
+            ariaLabel={
+              language === 'ka'
+                ? `${modelAssets.burger.nameKa} ინტერაქტიული 3D პრევიუ`
+                : `${modelAssets.burger.name} interactive 3D preview`
+            }
           />
           <h2>{text.phoneTitle}</h2>
           <p>{language === 'ka' ? '3D ნახვა · AR მაგიდაზე' : 'Inspect in 3D · place on table'}</p>
@@ -63,10 +69,6 @@ export function BetaRealHero({ language, text, onModelOpen }: BetaRealHeroProps)
             <span>3D</span>
             <span>AR</span>
           </div>
-        </div>
-        <div className={styles.orbitCard}>
-          <Rotate3D size={26} aria-hidden="true" />
-          <span>{text.orbit}</span>
         </div>
       </div>
     </section>

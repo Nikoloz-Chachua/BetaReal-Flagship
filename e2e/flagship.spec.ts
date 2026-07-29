@@ -15,8 +15,20 @@ async function installModelViewerStub(page: Page, options: { failScript?: boolea
     const body = `
       if (!window.customElements.get('model-viewer')) {
         window.customElements.define('model-viewer', class extends HTMLElement {
+          theta = 20;
+          radius = 96;
           activateAR = async () => undefined;
+          getCameraOrbit() {
+            return { theta: this.theta + 'deg', phi: '66deg', radius: this.radius + '%' };
+          }
           connectedCallback() {
+            this.addEventListener('pointermove', () => {
+              this.theta += 12;
+            });
+            this.addEventListener('wheel', (event) => {
+              event.preventDefault();
+              this.radius = Math.max(45, this.radius + (event.deltaY > 0 ? 8 : -8));
+            });
             if (${options.autoLoad !== false}) {
               window.setTimeout(() => this.dispatchEvent(new Event('load')), 0);
             }
@@ -41,7 +53,8 @@ test('deep links, navigation, lazy model loading, drawer, modal, and blocked for
   await page.goto('/?restaurant=Demo%20Bistro&utm_source=qa&utm_campaign=smoke')
   await expect(page.getByRole('heading', { name: 'YOUR MENU, BEYOND THE SCREEN.' })).toBeVisible()
   await expect(page.getByText('Demo Bistro')).toBeVisible()
-  await expect(page.locator('script[data-betareal-model-viewer]')).toHaveCount(0)
+  await expect(page.locator('script[data-betareal-model-viewer]')).toHaveCount(1)
+  await expect(page.getByTestId('inline-model-hero-bigburger')).toHaveAttribute('data-inline-model-state', 'ready')
 
   await page.getByRole('navigation', { name: 'Restaurant experiences' }).getByRole('link', { name: 'Fast Casual', exact: true }).click()
   await expect(page.locator('#premium-fast-casual')).toBeInViewport()
@@ -162,7 +175,61 @@ test('responsive layouts avoid horizontal overflow and keep headings visible', a
   }
 })
 
+test('chapter tiers have distinct backgrounds, surfaces, and readable story contrast', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 920 })
+  await page.goto('/')
+  const tiers = await page.evaluate(() => {
+    function rgbParts(value: string) {
+      if (value.startsWith('#')) {
+        const hex = value.slice(1)
+        const full = hex.length === 3 ? hex.split('').map((part) => part + part).join('') : hex
+        return [0, 2, 4].map((start) => Number.parseInt(full.slice(start, start + 2), 16))
+      }
+      const match = value.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/)
+      return match ? [Number(match[1]), Number(match[2]), Number(match[3])] : [0, 0, 0]
+    }
+    function luminance(rgb: number[]) {
+      const [r, g, b] = rgb.map((channel) => {
+        const normalized = channel / 255
+        return normalized <= 0.03928 ? normalized / 12.92 : ((normalized + 0.055) / 1.055) ** 2.4
+      })
+      return 0.2126 * r + 0.7152 * g + 0.0722 * b
+    }
+    function contrast(a: string, b: string) {
+      const first = luminance(rgbParts(a))
+      const second = luminance(rgbParts(b))
+      return (Math.max(first, second) + 0.05) / (Math.min(first, second) + 0.05)
+    }
+    return ['luxury-dining', 'modern-cafe', 'premium-fast-casual', 'social-dining'].map((id) => {
+      const chapter = document.getElementById(id)
+      const preview = chapter?.querySelector<HTMLElement>('[data-layout]')
+      const story = chapter?.querySelector<HTMLElement>('[data-testid$="-story"]')
+      if (!chapter || !preview || !story) return null
+      const chapterStyle = getComputedStyle(chapter)
+      const previewStyle = getComputedStyle(preview)
+      const storyStyle = getComputedStyle(story)
+      const chapterBg = chapterStyle.getPropertyValue('--chapter-bg').trim() || chapterStyle.backgroundColor
+      return {
+        id,
+        chapterBg: chapterStyle.backgroundImage + chapterStyle.backgroundColor,
+        surface: previewStyle.backgroundImage + previewStyle.backgroundColor,
+        borderRadius: previewStyle.borderRadius,
+        storyContrast: contrast(storyStyle.color, chapterBg),
+      }
+    })
+  })
+  expect(tiers.every(Boolean)).toBe(true)
+  expect(new Set(tiers.map((tier) => tier?.chapterBg)).size).toBe(4)
+  expect(new Set(tiers.map((tier) => tier?.surface)).size).toBe(4)
+  for (const tier of tiers) {
+    expect(tier!.storyContrast, `${tier!.id} story contrast`).toBeGreaterThanOrEqual(4.5)
+  }
+  expect(tiers.find((tier) => tier?.id === 'luxury-dining')?.chapterBg).toContain('42, 8, 19')
+  expect(tiers.find((tier) => tier?.id === 'social-dining')?.borderRadius).toBe('8px')
+})
+
 test('official branding and compact hero phone stay stable across key viewports', async ({ page }) => {
+  await installModelViewerStub(page)
   for (const size of [
     { width: 390, height: 844, maxPhoneWidth: 292, maxPhoneHeight: 452 },
     { width: 1280, height: 577, minPhoneWidth: 300, maxPhoneWidth: 320, minPhoneHeight: 520, maxPhoneHeight: 570 },
@@ -187,6 +254,120 @@ test('official branding and compact hero phone stay stable across key viewports'
     if (size.minPhoneHeight) expect(phoneMetrics.height, `phone height at ${size.width}x${size.height}`).toBeGreaterThanOrEqual(size.minPhoneHeight)
     expect(phoneMetrics.scrollHeight, `phone content clips at ${size.width}x${size.height}`).toBeLessThanOrEqual(phoneMetrics.clientHeight + 1)
   }
+})
+
+test('hero phone uses an inline model viewer with stable layers and direct gestures', async ({ page }) => {
+  await installModelViewerStub(page)
+  await page.setViewportSize({ width: 1440, height: 920 })
+  await page.goto('/')
+
+  await expect(page.getByText('Real model after tap')).toHaveCount(0)
+  const heroFrame = page.getByTestId('inline-model-hero-bigburger')
+  await expect(heroFrame).toHaveAttribute('data-inline-model-state', 'ready')
+  const viewer = heroFrame.locator('model-viewer')
+  await expect(viewer).toHaveAttribute('src', /druidi_balanced_30k_2k\.glb/)
+  await expect(viewer).toHaveAttribute('camera-controls', 'true')
+  await expect(viewer).not.toHaveAttribute('poster')
+
+  const readyLayers = await heroFrame.evaluate((element) => {
+    const poster = element.querySelector('img')
+    const model = element.querySelector('model-viewer')
+    if (!poster || !model) return null
+    const frameRect = element.getBoundingClientRect()
+    const posterRect = poster.getBoundingClientRect()
+    const modelRect = model.getBoundingClientRect()
+    const posterStyle = getComputedStyle(poster)
+    const modelStyle = getComputedStyle(model)
+    return {
+      frame: { width: frameRect.width, height: frameRect.height },
+      poster: { width: posterRect.width, height: posterRect.height, visible: posterStyle.visibility === 'visible' && Number(posterStyle.opacity) > 0 },
+      model: { width: modelRect.width, height: modelRect.height, visible: modelStyle.visibility === 'visible' && Number(modelStyle.opacity) > 0 },
+    }
+  })
+  expect(readyLayers).not.toBeNull()
+  expect(readyLayers!.poster.width).toBeCloseTo(readyLayers!.frame.width, 1)
+  expect(readyLayers!.poster.height).toBeCloseTo(readyLayers!.frame.height, 1)
+  expect(readyLayers!.model.width).toBeCloseTo(readyLayers!.frame.width, 1)
+  expect(readyLayers!.model.height).toBeCloseTo(readyLayers!.frame.height, 1)
+  expect([readyLayers!.poster.visible, readyLayers!.model.visible].filter(Boolean)).toHaveLength(1)
+
+  const beforeDrag = await viewer.evaluate((element) => (element as unknown as { getCameraOrbit: () => { theta: string; radius: string } }).getCameraOrbit())
+  await viewer.dispatchEvent('pointerdown')
+  await viewer.dispatchEvent('pointermove')
+  await viewer.dispatchEvent('pointerup')
+  const afterDrag = await viewer.evaluate((element) => (element as unknown as { getCameraOrbit: () => { theta: string; radius: string } }).getCameraOrbit())
+  expect(afterDrag.theta).not.toBe(beforeDrag.theta)
+  await expect(page.getByRole('dialog')).toHaveCount(0)
+
+  await viewer.dispatchEvent('wheel', { deltaY: 120 })
+  const afterWheel = await viewer.evaluate((element) => (element as unknown as { getCameraOrbit: () => { theta: string; radius: string } }).getCameraOrbit())
+  expect(afterWheel.radius).not.toBe(afterDrag.radius)
+  await expect(page.getByRole('dialog')).toHaveCount(0)
+})
+
+test('hero inline model keeps one visible layer through loading, ready, and failure states', async ({ page }) => {
+  await installModelViewerStub(page, { autoLoad: false })
+  await page.goto('/')
+  const heroFrame = page.getByTestId('inline-model-hero-bigburger')
+  await expect(heroFrame).toHaveAttribute('data-inline-model-state', 'loading')
+
+  async function layerState() {
+    return heroFrame.evaluate((element) => {
+      const poster = element.querySelector('img')
+      const model = element.querySelector('model-viewer')
+      if (!poster) return null
+      const frameRect = element.getBoundingClientRect()
+      const posterRect = poster.getBoundingClientRect()
+      const modelRect = model?.getBoundingClientRect()
+      const posterStyle = getComputedStyle(poster)
+      const modelStyle = model ? getComputedStyle(model) : null
+      return {
+        frame: { width: frameRect.width, height: frameRect.height },
+        poster: {
+          width: posterRect.width,
+          height: posterRect.height,
+          visible: posterStyle.visibility === 'visible' && Number(posterStyle.opacity) > 0,
+        },
+        model: modelRect && modelStyle
+          ? {
+              width: modelRect.width,
+              height: modelRect.height,
+              visible: modelStyle.visibility === 'visible' && Number(modelStyle.opacity) > 0,
+            }
+          : null,
+      }
+    })
+  }
+
+  const loading = await layerState()
+  expect(loading).not.toBeNull()
+  expect(loading!.poster.visible).toBe(true)
+  expect(loading!.model?.visible).toBe(false)
+  expect(loading!.poster.width).toBeCloseTo(loading!.frame.width, 1)
+  expect(loading!.poster.height).toBeCloseTo(loading!.frame.height, 1)
+
+  await heroFrame.locator('model-viewer').dispatchEvent('load')
+  await expect(heroFrame).toHaveAttribute('data-inline-model-state', 'ready')
+  await page.waitForTimeout(220)
+  const ready = await layerState()
+  expect([ready!.poster.visible, ready!.model?.visible].filter(Boolean)).toHaveLength(1)
+  expect(ready!.model?.width).toBeCloseTo(ready!.frame.width, 1)
+  expect(ready!.model?.height).toBeCloseTo(ready!.frame.height, 1)
+
+  await page.reload()
+  const failedFrame = page.getByTestId('inline-model-hero-bigburger')
+  await failedFrame.locator('model-viewer').dispatchEvent('error')
+  await expect(failedFrame).toHaveAttribute('data-inline-model-state', 'failure')
+  const failure = await failedFrame.evaluate((element) => {
+    const poster = element.querySelector('img')
+    const model = element.querySelector('model-viewer')
+    if (!poster || !model) return null
+    return {
+      posterVisible: getComputedStyle(poster).visibility === 'visible' && Number(getComputedStyle(poster).opacity) > 0,
+      modelVisible: getComputedStyle(model).visibility === 'visible' && Number(getComputedStyle(model).opacity) > 0,
+    }
+  })
+  expect(failure).toEqual({ posterVisible: true, modelVisible: false })
 })
 
 test('mobile chapter demo follows story and unavailable model controls are absent', async ({ page }) => {
@@ -214,6 +395,33 @@ test('mobile chapter demo follows story and unavailable model controls are absen
   await expect(page.getByTestId('modern-cafe-demo').getByRole('button', { name: 'View in 3D: Chocolate Croissant' })).toBeVisible()
 })
 
+test('luxury preview removes unavailable model cards and uses an intentional two-card layout', async ({ page }) => {
+  await installModelViewerStub(page)
+  await page.setViewportSize({ width: 1440, height: 920 })
+  await page.goto('/')
+  await page.locator('#luxury-dining').evaluate((element) => element.scrollIntoView({ block: 'start', behavior: 'instant' }))
+  const luxuryDemo = page.getByTestId('luxury-dining-demo')
+  await expect(luxuryDemo.getByText('Beef Stroganoff')).toHaveCount(0)
+  await expect(luxuryDemo.getByText('Gazpacho')).toHaveCount(0)
+  await expect(luxuryDemo.getByRole('heading', { name: 'Beef Fillet' })).toBeVisible()
+  await expect(luxuryDemo.getByRole('heading', { name: 'Chocolate Croissant' })).toBeVisible()
+  await expect(luxuryDemo.getByRole('button', { name: 'View in 3D: Beef Fillet' })).toHaveCount(0)
+  await expect(luxuryDemo.getByTestId('inline-model-luxury-croissant-3d')).toBeVisible()
+
+  const layout = await luxuryDemo.getByTestId('luxury-dining-preview-grid').evaluate((grid) => {
+    const cards = Array.from(grid.querySelectorAll('article')).map((card) => card.getBoundingClientRect())
+    const gridStyle = getComputedStyle(grid)
+    return {
+      count: cards.length,
+      columns: gridStyle.gridTemplateColumns.split(' ').length,
+      sameRow: Math.abs(cards[0].top - cards[1].top) < 2,
+      gap: Number.parseFloat(gridStyle.columnGap),
+    }
+  })
+  expect(layout).toEqual(expect.objectContaining({ count: 2, columns: 2, sameRow: true }))
+  expect(layout.gap).toBeGreaterThanOrEqual(16)
+})
+
 test('inline model thumbnails preserve card media geometry and direct gestures do not open dialogs', async ({ page }) => {
   await installModelViewerStub(page)
   await page.setViewportSize({ width: 390, height: 844 })
@@ -228,6 +436,7 @@ test('inline model thumbnails preserve card media geometry and direct gestures d
   const thumbnail = page.getByTestId('inline-model-cafe-croissant')
   await thumbnail.scrollIntoViewIfNeeded()
   await expect(thumbnail).toHaveAttribute('data-inline-model-state', 'ready')
+  await page.waitForTimeout(220)
   const viewer = thumbnail.locator('model-viewer')
   await expect(viewer).toHaveAttribute('camera-controls', 'true')
   await expect(viewer).toHaveAttribute('touch-action', 'pan-y')

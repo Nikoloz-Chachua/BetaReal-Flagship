@@ -127,14 +127,12 @@
   text-transform: uppercase;
 }
 
-.phone img {
+.phone .phoneModelFrame {
   width: 100%;
   height: 214px;
   flex: 0 0 auto;
-  object-fit: contain;
-  border: 1px solid var(--border);
   border-radius: 22px;
-  background: var(--accent-light);
+  box-shadow: 0 0 0 1px var(--border) inset;
 }
 
 .phone h2 {
@@ -171,25 +169,6 @@
   background: var(--accent);
 }
 
-.orbitCard {
-  position: absolute;
-  right: 0;
-  bottom: 58px;
-  z-index: 2;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  max-width: 190px;
-  padding: 14px 16px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--surface);
-  box-shadow: var(--shadow-sm);
-  color: var(--secondary);
-  font-size: 0.82rem;
-  font-weight: 760;
-}
-
 @media (max-width: 860px) {
   .hero {
     grid-template-columns: 1fr;
@@ -207,7 +186,7 @@
     height: 452px;
   }
 
-  .phone img {
+  .phone .phoneModelFrame {
     height: 176px;
   }
 }
@@ -268,7 +247,7 @@
     font-size: 1.25rem;
   }
 
-  .phone img {
+  .phone .phoneModelFrame {
     height: 162px;
   }
 
@@ -281,8 +260,4 @@
     padding-top: 10px;
   }
 
-  .orbitCard {
-    right: 4px;
-    bottom: 18px;
-  }
 }
