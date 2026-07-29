@@ -20,11 +20,11 @@
 }
 
 .preview[data-layout='cafe'] {
-  border-color: rgba(109, 132, 102, 0.2);
+  border-color: rgba(6, 120, 150, 0.2);
   background:
-    radial-gradient(circle at 88% 0, rgba(221, 231, 203, 0.68), transparent 28%),
-    var(--chapter-surface);
-  box-shadow: 0 18px 48px rgba(72, 87, 67, 0.12);
+    radial-gradient(circle at 88% 0, rgba(120, 186, 196, 0.28), transparent 28%),
+    linear-gradient(158deg, #ffffff 0%, #e6fbff 100%);
+  box-shadow: 0 18px 48px rgba(11, 42, 48, 0.14);
 }
 
 .preview[data-layout='poster'] {
@@ -157,6 +157,78 @@
 
 .grid[data-layout='cafe'] .card {
   border-radius: 18px 18px 8px 8px;
+  border-color: rgba(6, 120, 150, 0.2);
+  background: linear-gradient(158deg, #ffffff 0%, #e6fbff 100%);
+  box-shadow: 0 16px 34px rgba(11, 42, 48, 0.1);
+}
+
+.preview[data-layout='cafe'] .restaurantHeader {
+  border-bottom-color: rgba(6, 120, 150, 0.2);
+}
+
+.preview[data-layout='cafe'] .restaurantHeader p,
+.preview[data-layout='cafe'] .cardTop p,
+.preview[data-layout='cafe'] .previewFooter p,
+.preview[data-layout='cafe'] .detailCategory {
+  color: #0b2a30;
+}
+
+.preview[data-layout='cafe'] .restaurantHeader strong,
+.preview[data-layout='cafe'] .cardTop strong,
+.preview[data-layout='cafe'] .card h3,
+.preview[data-layout='cafe'] .cardBody > p,
+.preview[data-layout='cafe'] .badge,
+.preview[data-layout='cafe'] .inlineModelHint {
+  color: #0b2a30;
+}
+
+.preview[data-layout='cafe'] .headerIcons svg {
+  border-color: rgba(6, 120, 150, 0.2);
+  background: rgba(255, 255, 255, 0.86);
+  color: #0b2a30;
+}
+
+.preview[data-layout='cafe'] .categories button {
+  border-color: rgba(6, 120, 150, 0.2);
+  background: rgba(255, 255, 255, 0.86);
+  color: #0b2a30;
+}
+
+.preview[data-layout='cafe'] .categories button[aria-pressed='true'] {
+  border-color: transparent;
+  background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+  color: #ffffff;
+}
+
+.preview[data-layout='cafe'] .imageButton img,
+.preview[data-layout='cafe'] .mediaFrame,
+.preview[data-layout='cafe'] .inlineModel-initial,
+.preview[data-layout='cafe'] .inlineModel-loading,
+.preview[data-layout='cafe'] .inlineModel-failure,
+.preview[data-layout='cafe'] .inlineModelPoster {
+  background: #78bac4;
+}
+
+.preview[data-layout='cafe'] .badge {
+  border-color: rgba(8, 145, 178, 0.44);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.preview[data-layout='cafe'] .cardActions button,
+.preview[data-layout='cafe'] .previewFooter a {
+  border-color: transparent;
+  background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+  color: #ffffff;
+}
+
+.preview[data-layout='cafe'] .cardActions button:first-child {
+  border-color: rgba(6, 120, 150, 0.2);
+  background: rgba(255, 255, 255, 0.86);
+  color: #0b2a30;
+}
+
+.preview[data-layout='cafe'] .previewFooter {
+  border-top-color: rgba(6, 120, 150, 0.2);
 }
 
 .grid[data-layout='poster'] .card h3,

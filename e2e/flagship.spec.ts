@@ -200,6 +200,15 @@ test('chapter tiers have distinct backgrounds, surfaces, and readable story cont
       const second = luminance(rgbParts(b))
       return (Math.max(first, second) + 0.05) / (Math.min(first, second) + 0.05)
     }
+    const cafeReference = {
+      bg: 'rgb(54, 161, 176)',
+      ink: 'rgb(11, 42, 48)',
+      accent: 'rgb(8, 145, 178)',
+      accentStrong: 'rgb(14, 116, 144)',
+      stage: 'rgb(120, 186, 196)',
+      pill: 'rgba(255, 255, 255, 0.86)',
+      border: 'rgba(6, 120, 150, 0.2)',
+    }
     return ['luxury-dining', 'modern-cafe', 'premium-fast-casual', 'social-dining'].map((id) => {
       const chapter = document.getElementById(id)
       const preview = chapter?.querySelector<HTMLElement>('[data-layout]')
@@ -209,12 +218,44 @@ test('chapter tiers have distinct backgrounds, surfaces, and readable story cont
       const previewStyle = getComputedStyle(preview)
       const storyStyle = getComputedStyle(story)
       const chapterBg = chapterStyle.getPropertyValue('--chapter-bg').trim() || chapterStyle.backgroundColor
+      const firstCard = preview.querySelector<HTMLElement>('article')
+      const firstCardTitle = firstCard?.querySelector<HTMLElement>('h3')
+      const firstCardBody = firstCard?.querySelector<HTMLElement>('h3 + p')
+      const inactivePill = preview.querySelector<HTMLElement>('[aria-label="Preview categories"] button:not([aria-pressed="true"])')
+      const activePill = preview.querySelector<HTMLElement>('[aria-label="Preview categories"] button[aria-pressed="true"]')
+      const stage = preview.querySelector<HTMLElement>('[data-testid="inline-model-cafe-croissant"]')
+      const primaryAction = preview.querySelector<HTMLElement>('article button[aria-label^="View in 3D"]')
       return {
         id,
+        chapterBackgroundColor: chapterStyle.backgroundColor,
         chapterBg: chapterStyle.backgroundImage + chapterStyle.backgroundColor,
         surface: previewStyle.backgroundImage + previewStyle.backgroundColor,
+        previewBorderColor: previewStyle.borderColor,
         borderRadius: previewStyle.borderRadius,
         storyContrast: contrast(storyStyle.color, chapterBg),
+        storyColor: storyStyle.color,
+        cafe: id === 'modern-cafe' && firstCard && firstCardTitle && firstCardBody && inactivePill && activePill && stage && primaryAction
+          ? {
+              bodyColor: getComputedStyle(story.querySelector<HTMLElement>('p:nth-of-type(2)') ?? story).color,
+              previewBackgroundImage: previewStyle.backgroundImage,
+              previewBorderColor: previewStyle.borderColor,
+              cardBackgroundImage: getComputedStyle(firstCard).backgroundImage,
+              cardBorderColor: getComputedStyle(firstCard).borderColor,
+              cardTitleColor: getComputedStyle(firstCardTitle).color,
+              cardBodyColor: getComputedStyle(firstCardBody).color,
+              inactivePillBackground: getComputedStyle(inactivePill).backgroundColor,
+              inactivePillColor: getComputedStyle(inactivePill).color,
+              activePillBackground: getComputedStyle(activePill).backgroundImage,
+              activePillColor: getComputedStyle(activePill).color,
+              stageBackground: getComputedStyle(stage).backgroundColor,
+              primaryActionBackground: getComputedStyle(primaryAction).backgroundImage,
+              primaryActionColor: getComputedStyle(primaryAction).color,
+              textOnChapterContrast: contrast(cafeReference.ink, cafeReference.bg),
+              textOnCardContrast: Math.min(contrast(cafeReference.ink, 'rgb(255, 255, 255)'), contrast(cafeReference.ink, 'rgb(230, 251, 255)')),
+              pillContrast: contrast(cafeReference.ink, 'rgb(255, 255, 255)'),
+              activePillContrast: Math.min(contrast('rgb(255, 255, 255)', cafeReference.accent), contrast('rgb(255, 255, 255)', cafeReference.accentStrong)),
+            }
+          : null,
       }
     })
   })
@@ -225,7 +266,36 @@ test('chapter tiers have distinct backgrounds, surfaces, and readable story cont
     expect(tier!.storyContrast, `${tier!.id} story contrast`).toBeGreaterThanOrEqual(4.5)
   }
   expect(tiers.find((tier) => tier?.id === 'luxury-dining')?.chapterBg).toContain('42, 8, 19')
+  expect(tiers.find((tier) => tier?.id === 'premium-fast-casual')?.chapterBg).toContain('247, 220, 174')
+  expect(tiers.find((tier) => tier?.id === 'social-dining')?.chapterBg).toContain('51, 58, 64')
   expect(tiers.find((tier) => tier?.id === 'social-dining')?.borderRadius).toBe('8px')
+
+  const cafe = tiers.find((tier) => tier?.id === 'modern-cafe')
+  expect(cafe?.chapterBackgroundColor).toBe('rgb(54, 161, 176)')
+  expect(cafe?.chapterBg).toContain('54, 161, 176')
+  expect(cafe?.chapterBg).not.toContain('251, 248, 238')
+  expect(cafe?.chapterBg).not.toContain('237, 241, 223')
+  expect(cafe?.storyColor).toBe('rgb(11, 42, 48)')
+  expect(cafe?.cafe).toMatchObject({
+    bodyColor: 'rgb(11, 42, 48)',
+    previewBorderColor: 'rgba(6, 120, 150, 0.2)',
+    cardBorderColor: 'rgba(6, 120, 150, 0.2)',
+    cardTitleColor: 'rgb(11, 42, 48)',
+    cardBodyColor: 'rgb(11, 42, 48)',
+    inactivePillBackground: 'rgba(255, 255, 255, 0.86)',
+    inactivePillColor: 'rgb(11, 42, 48)',
+    activePillColor: 'rgb(255, 255, 255)',
+    stageBackground: 'rgb(120, 186, 196)',
+    primaryActionColor: 'rgb(255, 255, 255)',
+  })
+  expect(cafe?.cafe?.previewBackgroundImage).toContain('rgb(255, 255, 255) 0%, rgb(230, 251, 255) 100%')
+  expect(cafe?.cafe?.cardBackgroundImage).toContain('rgb(255, 255, 255) 0%, rgb(230, 251, 255) 100%')
+  expect(cafe?.cafe?.activePillBackground).toContain('rgb(8, 145, 178) 0%, rgb(14, 116, 144) 100%')
+  expect(cafe?.cafe?.primaryActionBackground).toContain('rgb(8, 145, 178) 0%, rgb(14, 116, 144) 100%')
+  expect(cafe?.cafe?.textOnChapterContrast).toBeGreaterThanOrEqual(4.5)
+  expect(cafe?.cafe?.textOnCardContrast).toBeGreaterThanOrEqual(4.5)
+  expect(cafe?.cafe?.pillContrast).toBeGreaterThanOrEqual(4.5)
+  expect(cafe?.cafe?.activePillContrast).toBeGreaterThanOrEqual(3)
 })
 
 test('official branding and compact hero phone stay stable across key viewports', async ({ page }) => {
@@ -264,6 +334,7 @@ test('hero phone uses an inline model viewer with stable layers and direct gestu
   await expect(page.getByText('Real model after tap')).toHaveCount(0)
   const heroFrame = page.getByTestId('inline-model-hero-bigburger')
   await expect(heroFrame).toHaveAttribute('data-inline-model-state', 'ready')
+  await page.waitForTimeout(220)
   const viewer = heroFrame.locator('model-viewer')
   await expect(viewer).toHaveAttribute('src', /druidi_balanced_30k_2k\.glb/)
   await expect(viewer).toHaveAttribute('camera-controls', 'true')

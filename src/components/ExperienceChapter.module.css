@@ -227,20 +227,39 @@
 }
 
 .chapter.cafe {
+  background-color: #36a1b0;
   background:
-    radial-gradient(circle at 14% 18%, rgba(221, 231, 203, 0.9), transparent 27%),
-    radial-gradient(circle at 88% 20%, rgba(255, 255, 255, 0.72), transparent 24%),
-    linear-gradient(180deg, #fbf8ee 0%, #edf1df 100%);
+    radial-gradient(circle at 14% 18%, rgba(120, 186, 196, 0.48), transparent 28%),
+    radial-gradient(circle at 88% 20%, rgba(230, 251, 255, 0.36), transparent 24%),
+    #36a1b0;
 }
 
 .chapter.cafe::before {
   background:
-    linear-gradient(135deg, transparent 0 47%, rgba(109, 132, 102, 0.09) 47% 48%, transparent 48% 100%),
-    radial-gradient(ellipse at 70% 78%, rgba(155, 186, 153, 0.24), transparent 34%);
+    linear-gradient(135deg, transparent 0 47%, rgba(230, 251, 255, 0.1) 47% 48%, transparent 48% 100%),
+    radial-gradient(ellipse at 70% 78%, rgba(8, 145, 178, 0.2), transparent 34%);
 }
 
 .cafe .inner {
   align-items: center;
+}
+
+.cafe .kicker,
+.cafe .concept,
+.cafe .body,
+.cafe .note {
+  color: #0b2a30;
+}
+
+.cafe .actions a {
+  background: rgba(255, 255, 255, 0.94);
+  color: #0b2a30;
+}
+
+.cafe .actions button {
+  border-color: rgba(6, 120, 150, 0.2);
+  background: rgba(230, 251, 255, 0.86);
+  color: #0b2a30;
 }
 
 .chapter.poster {

@@ -123,6 +123,25 @@ describe('segment architecture', () => {
       ['Chocolate Croissant', expect.stringContaining('/assets/models/croissant_poster.webp'), true],
     ])
   })
+
+  it('uses the live Monday Greens palette only for the modern cafe segment', () => {
+    const cafe = segments.find((segment) => segment.id === 'modern-cafe')
+    expect(cafe?.theme).toMatchObject({
+      background: '#36a1b0',
+      surface: '#ffffff',
+      ink: '#0b2a30',
+      muted: '#0b2a30',
+      accent: '#0891b2',
+      accent2: '#e6fbff',
+      accent3: '#0e7490',
+      layout: 'cafe',
+    })
+    expect(cafe?.verifiedClientNote?.en).toBe('Includes visual reference from Monday Greens, verified BetaReal client work.')
+
+    expect(segments.find((segment) => segment.id === 'luxury-dining')?.theme.background).toBe('#2A0813')
+    expect(segments.find((segment) => segment.id === 'premium-fast-casual')?.theme.background).toBe('#F3D19D')
+    expect(segments.find((segment) => segment.id === 'social-dining')?.theme.background).toBe('#2D3338')
+  })
 })
 
 describe('deployment base path', () => {
