@@ -9,7 +9,7 @@ import { FlagshipPage } from '../src/pages/FlagshipPage'
 import { localAssets } from '../src/data/assets'
 import { segmentRoutes, segments } from '../src/data/segments'
 import { resetAnalyticsDedupeForTests, trackEvent } from '../src/lib/analytics'
-import { ensureModelViewerScript, launchModelViewerAR, type ModelViewerARElement } from '../src/lib/modelViewer'
+import { ensureModelViewerScript, launchModelViewerAR, MODEL_VIEWER_MAX_CAMERA_ORBIT, type ModelViewerARElement } from '../src/lib/modelViewer'
 import * as modelViewer from '../src/lib/modelViewer'
 import { sanitizeRestaurantParam, sanitizeTrackingParam } from '../src/lib/personalization'
 import { normalizeBasePath, stripBasePath, withBasePath } from '../src/lib/basePath'
@@ -221,6 +221,7 @@ describe('language and model loading', () => {
     })
     expect(viewer).toHaveAttribute('src', expect.stringContaining('druidi_balanced_30k_2k.glb'))
     expect(viewer).toHaveAttribute('camera-controls', 'true')
+    expect(viewer).toHaveAttribute('max-camera-orbit', MODEL_VIEWER_MAX_CAMERA_ORBIT)
     expect(viewer).toHaveAttribute('touch-action', 'pan-y')
     expect(viewer).not.toHaveAttribute('poster')
   })
@@ -288,10 +289,38 @@ describe('language and model loading', () => {
     })
     await waitFor(() => expect(thumbnail).toHaveAttribute('data-inline-model-state', 'ready'))
     expect(viewer).toHaveAttribute('camera-controls', 'true')
+    expect(viewer).toHaveAttribute('max-camera-orbit', MODEL_VIEWER_MAX_CAMERA_ORBIT)
     expect(viewer).toHaveAttribute('touch-action', 'pan-y')
     expect(viewer).toHaveAttribute('auto-rotate', 'true')
     expect(viewer).not.toHaveAttribute('poster')
     expect(thumbnail.querySelector('img[alt="Chocolate Croissant"]')).toBeInTheDocument()
+  })
+
+  it('applies the underside orbit limit to every rendered model-viewer surface', async () => {
+    vi.spyOn(modelViewer, 'ensureModelViewerScript').mockResolvedValue(true)
+
+    render(<FlagshipPage initialSegment="cafe" />)
+    triggerObservedInlineModels()
+
+    await waitFor(() => {
+      expect(document.querySelectorAll('model-viewer').length).toBeGreaterThan(1)
+    })
+    for (const viewer of Array.from(document.querySelectorAll('model-viewer'))) {
+      expect(viewer).toHaveAttribute('camera-controls', 'true')
+      expect(viewer).toHaveAttribute('max-camera-orbit', MODEL_VIEWER_MAX_CAMERA_ORBIT)
+    }
+
+    await userEvent.click(screen.getAllByRole('button', { name: 'View in 3D: Chocolate Croissant' })[0])
+    const fullViewer = await waitFor(() => {
+      const dialog = screen.getByRole('dialog')
+      const element = dialog.querySelector('model-viewer')
+      if (!element) throw new Error('modal model-viewer was not rendered')
+      return element
+    })
+    expect(fullViewer).toHaveAttribute('camera-orbit', '20deg 68deg 105%')
+    expect(fullViewer).toHaveAttribute('max-camera-orbit', MODEL_VIEWER_MAX_CAMERA_ORBIT)
+    expect(fullViewer).toHaveAttribute('ar', 'true')
+    expect(fullViewer).toHaveAttribute('ios-src', expect.stringContaining('.usdz'))
   })
 
   it('tracks only the first inline model thumbnail interaction per rendered item', async () => {

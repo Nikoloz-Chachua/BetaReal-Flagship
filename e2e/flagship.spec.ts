@@ -1,5 +1,8 @@
 import { expect, test, type Page } from '@playwright/test'
 
+const MODEL_VIEWER_MAX_CAMERA_ORBIT = 'auto 110deg auto'
+const MODEL_VIEWER_MAX_POLAR_DEG = 110
+
 declare global {
   interface Window {
     __analyticsEvents: Array<Record<string, string | undefined>>
@@ -16,14 +19,21 @@ async function installModelViewerStub(page: Page, options: { failScript?: boolea
       if (!window.customElements.get('model-viewer')) {
         window.customElements.define('model-viewer', class extends HTMLElement {
           theta = 20;
+          phi = 66;
           radius = 96;
           activateAR = async () => undefined;
+          maxPhiDeg() {
+            const parts = (this.getAttribute('max-camera-orbit') || '').trim().split(/\\s+/);
+            const phi = Number.parseFloat(parts[1] || '');
+            return Number.isFinite(phi) ? phi : 180;
+          }
           getCameraOrbit() {
-            return { theta: this.theta + 'deg', phi: '66deg', radius: this.radius + '%' };
+            return { theta: this.theta + 'deg', phi: this.phi + 'deg', radius: this.radius + '%' };
           }
           connectedCallback() {
             this.addEventListener('pointermove', () => {
               this.theta += 12;
+              this.phi = Math.min(this.maxPhiDeg(), this.phi + 80);
             });
             this.addEventListener('wheel', (event) => {
               event.preventDefault();
@@ -338,6 +348,7 @@ test('hero phone uses an inline model viewer with stable layers and direct gestu
   const viewer = heroFrame.locator('model-viewer')
   await expect(viewer).toHaveAttribute('src', /druidi_balanced_30k_2k\.glb/)
   await expect(viewer).toHaveAttribute('camera-controls', 'true')
+  await expect(viewer).toHaveAttribute('max-camera-orbit', MODEL_VIEWER_MAX_CAMERA_ORBIT)
   await expect(viewer).not.toHaveAttribute('poster')
 
   const readyLayers = await heroFrame.evaluate((element) => {
@@ -362,12 +373,13 @@ test('hero phone uses an inline model viewer with stable layers and direct gestu
   expect(readyLayers!.model.height).toBeCloseTo(readyLayers!.frame.height, 1)
   expect([readyLayers!.poster.visible, readyLayers!.model.visible].filter(Boolean)).toHaveLength(1)
 
-  const beforeDrag = await viewer.evaluate((element) => (element as unknown as { getCameraOrbit: () => { theta: string; radius: string } }).getCameraOrbit())
+  const beforeDrag = await viewer.evaluate((element) => (element as unknown as { getCameraOrbit: () => { theta: string; phi: string; radius: string } }).getCameraOrbit())
   await viewer.dispatchEvent('pointerdown')
   await viewer.dispatchEvent('pointermove')
   await viewer.dispatchEvent('pointerup')
-  const afterDrag = await viewer.evaluate((element) => (element as unknown as { getCameraOrbit: () => { theta: string; radius: string } }).getCameraOrbit())
+  const afterDrag = await viewer.evaluate((element) => (element as unknown as { getCameraOrbit: () => { theta: string; phi: string; radius: string } }).getCameraOrbit())
   expect(afterDrag.theta).not.toBe(beforeDrag.theta)
+  expect(Number.parseFloat(afterDrag.phi)).toBeLessThanOrEqual(MODEL_VIEWER_MAX_POLAR_DEG + 0.001)
   await expect(page.getByRole('dialog')).toHaveCount(0)
 
   await viewer.dispatchEvent('wheel', { deltaY: 120 })
@@ -510,6 +522,7 @@ test('inline model thumbnails preserve card media geometry and direct gestures d
   await page.waitForTimeout(220)
   const viewer = thumbnail.locator('model-viewer')
   await expect(viewer).toHaveAttribute('camera-controls', 'true')
+  await expect(viewer).toHaveAttribute('max-camera-orbit', MODEL_VIEWER_MAX_CAMERA_ORBIT)
   await expect(viewer).toHaveAttribute('touch-action', 'pan-y')
   await expect(viewer).toHaveAttribute('auto-rotate', 'true')
   await expect(viewer).not.toHaveAttribute('poster')
@@ -551,6 +564,53 @@ test('inline model thumbnails preserve card media geometry and direct gestures d
   await page.keyboard.press('Escape')
   await cafeDemo.getByRole('button', { name: 'Place in AR: Chocolate Croissant' }).click()
   await expect(page.getByRole('dialog').filter({ has: page.getByRole('heading', { name: 'Chocolate Croissant' }) })).toBeVisible()
+})
+
+test('every model viewer exposes the underside orbit lock and inline gestures keep rotation and zoom usable', async ({ page }) => {
+  await installModelViewerStub(page)
+  await page.setViewportSize({ width: 1280, height: 900 })
+  await page.goto('/')
+
+  for (const id of ['luxury-dining', 'modern-cafe', 'premium-fast-casual', 'social-dining']) {
+    await page.locator(`#${id}`).evaluate((element) => element.scrollIntoView({ block: 'start', behavior: 'instant' }))
+    await page.waitForTimeout(120)
+  }
+
+  const inlineViewers = page.locator('model-viewer')
+  const inlineCount = await inlineViewers.count()
+  expect(inlineCount).toBeGreaterThan(1)
+  for (let index = 0; index < inlineCount; index += 1) {
+    const viewer = inlineViewers.nth(index)
+    await expect(viewer).toHaveAttribute('camera-controls', 'true')
+    await expect(viewer).toHaveAttribute('max-camera-orbit', MODEL_VIEWER_MAX_CAMERA_ORBIT)
+  }
+
+  const thumbnail = page.getByTestId('inline-model-cafe-croissant')
+  await thumbnail.scrollIntoViewIfNeeded()
+  const viewer = thumbnail.locator('model-viewer')
+  const before = await viewer.evaluate((element) => (element as unknown as { getCameraOrbit: () => { theta: string; phi: string; radius: string } }).getCameraOrbit())
+  const box = await viewer.boundingBox()
+  expect(box).not.toBeNull()
+  await page.mouse.move(box!.x + box!.width / 2, box!.y + box!.height / 2)
+  await page.mouse.down()
+  await page.mouse.move(box!.x + box!.width / 2 + 260, box!.y + box!.height / 2 + 260, { steps: 8 })
+  await page.mouse.up()
+  const afterOrbit = await viewer.evaluate((element) => (element as unknown as { getCameraOrbit: () => { theta: string; phi: string; radius: string } }).getCameraOrbit())
+  expect(afterOrbit.theta).not.toBe(before.theta)
+  expect(Number.parseFloat(afterOrbit.phi)).toBeLessThanOrEqual(MODEL_VIEWER_MAX_POLAR_DEG + 0.001)
+  await expect(page.getByRole('dialog')).toHaveCount(0)
+
+  await viewer.dispatchEvent('wheel', { deltaY: 240 })
+  const afterZoom = await viewer.evaluate((element) => (element as unknown as { getCameraOrbit: () => { radius: string } }).getCameraOrbit())
+  expect(afterZoom.radius).not.toBe(afterOrbit.radius)
+  await expect(page.getByRole('dialog')).toHaveCount(0)
+
+  await page.getByRole('button', { name: 'View in 3D: Chocolate Croissant' }).first().click()
+  const modalViewer = page.getByRole('dialog').locator('model-viewer')
+  await expect(modalViewer).toHaveAttribute('camera-orbit', '20deg 68deg 105%')
+  await expect(modalViewer).toHaveAttribute('max-camera-orbit', MODEL_VIEWER_MAX_CAMERA_ORBIT)
+  await expect(modalViewer).toHaveAttribute('ar', 'true')
+  await expect(modalViewer).toHaveAttribute('ios-src', /\.usdz/)
 })
 
 test('inline model thumbnails keep only the poster painted while loading or failed', async ({ page }) => {

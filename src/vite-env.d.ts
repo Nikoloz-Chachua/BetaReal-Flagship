@@ -15,6 +15,7 @@ declare namespace JSX {
       'shadow-intensity'?: string
       exposure?: string
       'camera-orbit'?: string
+      'max-camera-orbit'?: string
       'field-of-view'?: string
       'disable-tap'?: boolean | string
       'ios-src'?: string

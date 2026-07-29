@@ -4,7 +4,14 @@ import type { ModelAsset, SegmentRoute } from '../data/types'
 import { copy } from '../data/i18n'
 import type { Language } from '../data/types'
 import { getTrackingContext, trackEvent } from '../lib/analytics'
-import { ensureModelViewerScript, launchModelViewerAR, openQuickLook, supportsQuickLook, type ModelViewerARElement } from '../lib/modelViewer'
+import {
+  ensureModelViewerScript,
+  launchModelViewerAR,
+  MODEL_VIEWER_MAX_CAMERA_ORBIT,
+  openQuickLook,
+  supportsQuickLook,
+  type ModelViewerARElement,
+} from '../lib/modelViewer'
 import { ErrorState } from './ErrorState'
 import { LoadingState } from './LoadingState'
 import { UnsupportedARState } from './UnsupportedARState'
@@ -137,6 +144,7 @@ export function ModelViewer({
           shadow-intensity="1"
           exposure="0.92"
           camera-orbit="20deg 68deg 105%"
+          max-camera-orbit={MODEL_VIEWER_MAX_CAMERA_ORBIT}
           interaction-prompt="auto"
           onLoad={() => setReady(true)}
           onError={() => setError(true)}
