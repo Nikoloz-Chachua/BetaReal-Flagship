@@ -22,7 +22,7 @@ export const copy = {
       experiencesLabel: 'Restaurant experiences',
     },
     hero: {
-      label: 'ვებსაიტი · 3D · AR',
+      label: 'WEB · 3D · AR',
       line: 'One platform. Every restaurant identity.',
       title: 'YOUR MENU, BEYOND THE SCREEN.',
       body: 'BetaReal creates custom restaurant websites and menus where guests can inspect dishes in 3D and place them on their table in AR.',

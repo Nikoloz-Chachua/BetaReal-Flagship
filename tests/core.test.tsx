@@ -219,6 +219,7 @@ describe('language and model loading', () => {
     vi.spyOn(modelViewer, 'ensureModelViewerScript').mockResolvedValue(true)
 
     render(<FlagshipPage />)
+    expect(screen.getByText('WEB · 3D · AR')).toBeInTheDocument()
     expect(screen.queryByText('Real model after tap')).not.toBeInTheDocument()
     expect(screen.getByText('ONE DISH. THREE WAYS TO EXPERIENCE IT BEFORE TASTING.')).toBeInTheDocument()
     const heroViewer = screen.getByTestId('inline-model-hero-bigburger')
