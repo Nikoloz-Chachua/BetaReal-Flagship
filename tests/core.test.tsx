@@ -336,6 +336,10 @@ describe('language and model loading', () => {
     expect(fullViewer).toHaveAttribute('max-camera-orbit', MODEL_VIEWER_MAX_CAMERA_ORBIT)
     expect(fullViewer).toHaveAttribute('ar', 'true')
     expect(fullViewer).toHaveAttribute('ios-src', expect.stringContaining('.usdz'))
+    const dialog = screen.getByRole('dialog')
+    expect(within(dialog).getByText('Loading 3D viewer...')).toBeInTheDocument()
+    act(() => fullViewer.dispatchEvent(new Event('load')))
+    await waitFor(() => expect(within(dialog).queryByText('Loading 3D viewer...')).not.toBeInTheDocument())
   })
 
   it('tracks only the first inline model thumbnail interaction per rendered item', async () => {

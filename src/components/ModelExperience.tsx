@@ -44,7 +44,7 @@ export function ModelViewer({
   const [ready, setReady] = useState(false)
   const [error, setError] = useState(false)
   const [unsupported, setUnsupported] = useState(false)
-  const viewerRef = useRef<ModelViewerARElement>(null)
+  const viewerRef = useRef<ModelViewerARElement | null>(null)
   const text = copy[language]
 
   const loadViewer = useCallback(async () => {
@@ -57,6 +57,7 @@ export function ModelViewer({
 
   const start = useCallback(async () => {
     setStarted(true)
+    setReady(false)
     setError(false)
     await loadViewer()
   }, [loadViewer])
@@ -69,6 +70,7 @@ export function ModelViewer({
     }
 
     setStarted(true)
+    setReady(false)
     setError(false)
     setUnsupported(false)
     const ok = await loadViewer()
@@ -83,6 +85,36 @@ export function ModelViewer({
       onARFallback?.()
     }
   }, [loadViewer, model.usdz, onARFallback, segment])
+
+  useEffect(() => {
+    setReady(Boolean(viewerRef.current?.loaded))
+    setError(false)
+  }, [model.glb])
+
+  const handleViewerLoad = useCallback(() => {
+    setReady(true)
+    setError(false)
+  }, [])
+
+  const handleViewerError = useCallback(() => {
+    setError(true)
+  }, [])
+
+  const setViewerRef = useCallback(
+    (element: ModelViewerARElement | null) => {
+      if (viewerRef.current) {
+        viewerRef.current.removeEventListener('load', handleViewerLoad)
+        viewerRef.current.removeEventListener('error', handleViewerError)
+      }
+      viewerRef.current = element
+      if (element) {
+        element.addEventListener('load', handleViewerLoad)
+        element.addEventListener('error', handleViewerError)
+        if (element.loaded) handleViewerLoad()
+      }
+    },
+    [handleViewerError, handleViewerLoad],
+  )
 
   useEffect(() => {
     if (!active || arRequestKey) return
@@ -128,7 +160,7 @@ export function ModelViewer({
         <img className={styles.errorPoster} src={model.poster} alt={language === 'ka' ? model.nameKa : model.name} width="900" height="900" />
       ) : (
         <model-viewer
-          ref={viewerRef}
+          ref={setViewerRef}
           className={styles.viewer}
           src={model.glb}
           poster={model.poster}
@@ -146,8 +178,6 @@ export function ModelViewer({
           camera-orbit="20deg 68deg 105%"
           max-camera-orbit={MODEL_VIEWER_MAX_CAMERA_ORBIT}
           interaction-prompt="auto"
-          onLoad={() => setReady(true)}
-          onError={() => setError(true)}
         />
       )}
       <div className={styles.controls}>

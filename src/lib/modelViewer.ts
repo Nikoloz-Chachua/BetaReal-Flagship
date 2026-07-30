@@ -66,6 +66,7 @@ export function openQuickLook(usdzUrl: string) {
 
 export interface ModelViewerARElement extends HTMLElement {
   activateAR?: () => Promise<void> | void
+  loaded?: boolean
 }
 
 export async function launchModelViewerAR(viewer: ModelViewerARElement | null | undefined) {

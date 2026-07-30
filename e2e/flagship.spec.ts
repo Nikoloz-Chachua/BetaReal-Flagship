@@ -76,6 +76,7 @@ test('deep links, navigation, lazy model loading, drawer, modal, and blocked for
   await page.getByRole('button', { name: /View a Dish in 3D/ }).click()
   const modelDialog = page.getByRole('dialog').filter({ has: page.getByRole('heading', { name: 'BigBurger' }) })
   await expect(modelDialog).toBeVisible()
+  await expect(modelDialog.getByText('Loading 3D viewer...')).toHaveCount(0)
   await expect(page.locator('script[data-betareal-model-viewer]')).toHaveCount(1)
   await page.keyboard.press('Escape')
   await expect(modelDialog).toBeHidden()
