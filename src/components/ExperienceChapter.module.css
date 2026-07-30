@@ -217,11 +217,12 @@
 :global(html[lang='ka']) .themeCondensed h2 {
   max-width: 100%;
   font-family: var(--font-ka-sans);
-  font-size: clamp(2.1rem, 3.4vw, 3.75rem);
+  font-size: clamp(2.1rem, 3vw, 3.25rem);
   font-weight: 720;
   line-height: 1.12;
   letter-spacing: 0;
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
+  word-break: normal;
   text-transform: none;
   text-wrap: pretty;
 }
