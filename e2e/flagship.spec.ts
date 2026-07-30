@@ -231,8 +231,8 @@ test('chapter tiers have distinct backgrounds, surfaces, and readable story cont
       const firstCard = preview.querySelector<HTMLElement>('article')
       const firstCardTitle = firstCard?.querySelector<HTMLElement>('h3')
       const firstCardBody = firstCard?.querySelector<HTMLElement>('h3 + p')
-      const inactivePill = preview.querySelector<HTMLElement>('[aria-label="Preview categories"] button:not([aria-pressed="true"])')
-      const activePill = preview.querySelector<HTMLElement>('[aria-label="Preview categories"] button[aria-pressed="true"]')
+      const inactivePill = preview.querySelector<HTMLElement>('[aria-label="Preview categories"] span:not([data-active="true"])')
+      const activePill = preview.querySelector<HTMLElement>('[aria-label="Preview categories"] span[data-active="true"]')
       const stage = preview.querySelector<HTMLElement>('[data-testid="inline-model-cafe-croissant"]')
       const primaryAction = preview.querySelector<HTMLElement>('article button[aria-label^="View in 3D"]')
       return {
@@ -513,9 +513,13 @@ test('inline model thumbnails preserve card media geometry and direct gestures d
   await page.locator('#modern-cafe').evaluate((element) => element.scrollIntoView({ block: 'start', behavior: 'instant' }))
 
   const cafeDemo = page.getByTestId('modern-cafe-demo')
-  const nonModelButton = cafeDemo.getByRole('button', { name: 'Details: Chia Fruit Bowl' })
-  await expect(nonModelButton.getByRole('img', { name: 'Chia Fruit Bowl' })).toBeVisible()
+  const photo = cafeDemo.getByRole('img', { name: 'Chia Fruit Bowl' })
+  await expect(photo).toBeVisible()
+  await expect(cafeDemo.getByRole('button', { name: 'Details: Chia Fruit Bowl' })).toHaveCount(0)
+  await expect(cafeDemo.getByLabel('Preview categories').locator('button')).toHaveCount(0)
   await expect(cafeDemo.getByTestId('inline-model-cafe-chia')).toHaveCount(0)
+  await photo.click()
+  await expect(page.getByRole('dialog')).toHaveCount(0)
 
   const thumbnail = page.getByTestId('inline-model-cafe-croissant')
   await thumbnail.scrollIntoViewIfNeeded()

@@ -1,4 +1,4 @@
-import { Box, Plus, ScanLine } from 'lucide-react'
+import { Box, ScanLine } from 'lucide-react'
 import type { Language, PreviewItem, SegmentRoute } from '../data/types'
 import { InlineModelThumbnail } from './InlineModelThumbnail'
 import styles from './DemoPreview.module.css'
@@ -10,14 +10,12 @@ interface ProductCardPreviewProps {
   labels: {
     view3d: string
     viewAr: string
-    details: string
   }
-  onDetails: (item: PreviewItem) => void
   onModel: (item: PreviewItem) => void
   onAR: (item: PreviewItem) => void
 }
 
-export function ProductCardPreview({ item, language, segment, labels, onDetails, onModel, onAR }: ProductCardPreviewProps) {
+export function ProductCardPreview({ item, language, segment, labels, onModel, onAR }: ProductCardPreviewProps) {
   const modelLabel = language === 'ka' ? item.name.ka : item.name.en
 
   return (
@@ -31,9 +29,9 @@ export function ProductCardPreview({ item, language, segment, labels, onDetails,
           segment={segment}
         />
       ) : (
-        <button className={styles.imageButton} type="button" onClick={() => onDetails(item)} aria-label={`${labels.details}: ${item.name[language]}`}>
+        <div className={styles.imageFrame}>
           <img src={item.image} alt={item.name[language]} loading="lazy" width="900" height="675" />
-        </button>
+        </div>
       )}
       <div className={styles.cardBody}>
         <div className={styles.cardTop}>
@@ -43,11 +41,8 @@ export function ProductCardPreview({ item, language, segment, labels, onDetails,
         <h3>{item.name[language]}</h3>
         <p>{item.description[language]}</p>
         {item.badge ? <span className={styles.badge}>{item.badge[language]}</span> : null}
-        <div className={styles.cardActions} data-has-model={Boolean(item.model)}>
-          <button type="button" onClick={() => onDetails(item)} aria-label={`${labels.details}: ${item.name[language]}`}>
-            <Plus size={18} aria-hidden="true" />
-          </button>
-          {item.model ? (
+        {item.model ? (
+          <div className={styles.cardActions} data-has-model="true">
             <>
               <button type="button" onClick={() => onModel(item)} aria-label={`${labels.view3d}: ${modelLabel}`}>
                 <Box size={18} aria-hidden="true" />
@@ -58,8 +53,8 @@ export function ProductCardPreview({ item, language, segment, labels, onDetails,
                 <span>AR</span>
               </button>
             </>
-          ) : null}
-        </div>
+          </div>
+        ) : null}
       </div>
     </article>
   )

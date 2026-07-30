@@ -254,17 +254,19 @@ describe('language and model loading', () => {
     await expect(second).resolves.toBe(false)
   })
 
-  it('keeps non-model cards as image detail buttons', async () => {
+  it('keeps photo-only dishes static while preserving real model controls', async () => {
     render(<FlagshipPage initialSegment="cafe" />)
     const cafeDemo = screen.getByTestId('modern-cafe-demo')
-    const detailButton = within(cafeDemo).getAllByRole('button', { name: 'Details: Chia Fruit Bowl' })[0]
-    expect(within(detailButton).getByRole('img', { name: 'Chia Fruit Bowl' })).toBeInTheDocument()
+    const photo = within(cafeDemo).getByRole('img', { name: 'Chia Fruit Bowl' })
+    expect(photo.closest('button')).toBeNull()
+    expect(within(cafeDemo).queryByRole('button', { name: 'Details: Chia Fruit Bowl' })).not.toBeInTheDocument()
     expect(within(cafeDemo).queryByTestId('inline-model-cafe-chia')).not.toBeInTheDocument()
+    expect(within(cafeDemo).getByLabelText('Preview categories').querySelectorAll('button')).toHaveLength(0)
 
-    await userEvent.click(detailButton)
-    const dialog = screen.getByRole('dialog')
-    expect(dialog).toBeVisible()
-    expect(within(dialog).getByRole('heading', { name: 'Chia Fruit Bowl' })).toBeInTheDocument()
+    await userEvent.click(photo)
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(within(cafeDemo).getByRole('button', { name: 'View in 3D: Chocolate Croissant' })).toBeInTheDocument()
+    expect(within(cafeDemo).getByRole('button', { name: 'Place in AR: Chocolate Croissant' })).toBeInTheDocument()
   })
 
   it('lazy-loads inline model thumbnails only after a model card enters the observer', async () => {

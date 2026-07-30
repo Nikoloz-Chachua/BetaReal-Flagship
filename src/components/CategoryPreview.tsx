@@ -5,9 +5,9 @@ export function CategoryPreview({ categories, language }: { categories: Localize
   return (
     <div className={styles.categories} aria-label={language === 'ka' ? 'მენიუს კატეგორიები' : 'Preview categories'}>
       {categories.map((category, index) => (
-        <button type="button" aria-pressed={index === 0} key={category.en}>
+        <span data-active={index === 0} key={category.en}>
           {category[language]}
-        </button>
+        </span>
       ))}
     </div>
   )
