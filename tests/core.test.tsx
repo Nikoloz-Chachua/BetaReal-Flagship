@@ -624,6 +624,7 @@ describe('AR and routing behavior', () => {
     expect(sourceHash).toBe(`sha256-${createHash('sha256').update(indexHtml.match(/<script\s+type="application\/ld\+json">([\s\S]*?)<\/script>/)?.[1] ?? '', 'utf8').digest('base64')}`)
     expect(headersText).toContain(`'${sourceHash}'`)
     expect(headersText.match(/script-src[^;\n]*/)?.[0]).not.toContain("'unsafe-inline'")
+    expect(headersText.match(/script-src[^;\n]*/)?.[0]).toContain("'wasm-unsafe-eval'")
     expect(headersText).toContain('X-Frame-Options: DENY')
     expect(headersText).toContain('https://ajax.googleapis.com')
     expect(headersText).toContain('https://pub-3c68559de18f4aee94d127e180937bdd.r2.dev')
