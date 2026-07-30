@@ -627,6 +627,7 @@ describe('AR and routing behavior', () => {
     expect(headersText).toContain('X-Frame-Options: DENY')
     expect(headersText).toContain('https://ajax.googleapis.com')
     expect(headersText).toContain('https://pub-3c68559de18f4aee94d127e180937bdd.r2.dev')
+    expect(headersText.match(/connect-src[^;\n]*/)?.[0]).toContain('https://www.gstatic.com')
     expect(headersText).toContain('worker-src')
     expect(headersText).toContain('blob:')
     expect(headersText).not.toContain('navigate-to')
