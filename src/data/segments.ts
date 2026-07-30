@@ -166,7 +166,7 @@ export const segments: SegmentConfig[] = [
       en: 'A bold menu preview for burger, combo, and customization flows where guests need clarity fast.',
       ka: 'თამამი მენიუს ნიმუში ბურგერების, კომბოებისა და ინდივიდუალური არჩევანისთვის, სადაც სტუმარმა გადაწყვეტილება სწრაფად და მარტივად უნდა მიიღოს.',
     },
-    demoUrl: 'https://restaurant-ar.pages.dev/?tenant=burger-lions-main',
+    demoUrl: 'https://restaurant-ar.pages.dev/?tenant=mugsy-main',
     primaryCta: { en: 'Open Fast Casual Demo', ka: 'სწრაფი მომსახურების დემოს გახსნა' },
     secondaryCta: { en: 'Rotate the Burger', ka: 'ბურგერის დატრიალება' },
     categories: [

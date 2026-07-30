@@ -37,7 +37,7 @@ Standalone Vite + React + TypeScript sales/demo platform for `https://yourrestau
 
 - Fine Dining & Luxury: `https://restaurant-ar.pages.dev/?tenant=b-main`
 - Modern Café & Lifestyle: `https://monday-greens.betareal.ge`
-- Premium Fast Casual: `https://restaurant-ar.pages.dev/?tenant=burger-lions-main`
+- Premium Fast Casual: `https://restaurant-ar.pages.dev/?tenant=mugsy-main`
 - Social Dining: `https://restaurant-ar.pages.dev/?tenant=pipes-burger-main`
 
 ## Notes And Limitations
