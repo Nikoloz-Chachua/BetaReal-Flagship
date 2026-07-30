@@ -7,7 +7,7 @@ export function RestaurantHeaderPreview({ segment, language }: { segment: Segmen
     <div className={styles.restaurantHeader}>
       <div>
         <p>{segment.conceptLabel[language]}</p>
-        <strong>YourRestaurant</strong>
+        <strong>{language === 'ka' ? 'თქვენი რესტორანი' : 'YourRestaurant'}</strong>
       </div>
       <div className={styles.headerIcons} aria-hidden="true">
         <Search size={18} />

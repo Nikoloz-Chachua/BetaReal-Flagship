@@ -36,6 +36,19 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+html[lang='ka'] body {
+  font-family: var(--font-ka-sans);
+  line-height: 1.55;
+}
+
+html[lang='ka'] h1,
+html[lang='ka'] h2,
+html[lang='ka'] h3 {
+  font-family: var(--font-ka-sans);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
 body.drawer-open,
 body.modal-open {
   overflow: hidden;

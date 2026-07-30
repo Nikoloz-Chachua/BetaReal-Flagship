@@ -43,9 +43,16 @@
   .inner {
     grid-template-columns: 1fr;
     padding: 22px 0;
+    gap: 14px;
   }
 
   .inner div {
     justify-content: flex-start;
+  }
+}
+
+@media (max-width: 520px) {
+  .inner {
+    width: min(100% - 24px, 1160px);
   }
 }

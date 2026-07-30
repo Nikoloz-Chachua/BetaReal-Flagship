@@ -14,6 +14,8 @@
   --radius-lg: 18px;
   --header-height: 68px;
   --content: min(1160px, calc(100vw - 40px));
-  --font-sans: Inter, "Noto Sans Georgian", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-serif: "Georgia", "Noto Serif Georgian", serif;
+  --font-sans: Inter, "Noto Sans Georgian", "BPG Arial", Sylfaen, "DejaVu Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-serif: Georgia, "Noto Serif Georgian", Sylfaen, "DejaVu Serif", serif;
+  --font-ka-sans: "Noto Sans Georgian", "BPG Arial", Sylfaen, "DejaVu Sans", system-ui, sans-serif;
+  --font-ka-serif: "Noto Serif Georgian", Sylfaen, "DejaVu Serif", "Noto Sans Georgian", serif;
 }

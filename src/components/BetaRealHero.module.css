@@ -168,11 +168,33 @@
 .phoneActions span {
   display: grid;
   place-items: center;
-  min-height: 42px;
+  min-height: 44px;
   border-radius: 999px;
   background: var(--ink);
   color: #fff;
   font-weight: 840;
+}
+
+:global(html[lang='ka']) .eyebrow,
+:global(html[lang='ka']) .line,
+:global(html[lang='ka']) .phoneCategory,
+:global(html[lang='ka']) .phone .phoneClaim {
+  font-family: var(--font-ka-sans);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+:global(html[lang='ka']) .copy h1 {
+  font-family: var(--font-ka-sans);
+  font-weight: 760;
+  line-height: 1.1;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+:global(html[lang='ka']) .body,
+:global(html[lang='ka']) .phone p {
+  line-height: 1.55;
 }
 
 .phoneActions span:last-child {
@@ -275,4 +297,17 @@
     padding-top: 10px;
   }
 
+}
+
+@media (max-width: 520px) {
+  :global(html[lang='ka']) .copy h1 {
+    font-size: clamp(1.96rem, 10.2vw, 2.6rem);
+    line-height: 1.12;
+    text-wrap: wrap;
+  }
+
+  :global(html[lang='ka']) .phone .phoneClaim {
+    font-size: 0.7rem;
+    line-height: 1.2;
+  }
 }

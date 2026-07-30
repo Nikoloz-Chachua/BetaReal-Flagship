@@ -21,6 +21,8 @@ interface ExperienceChapterProps {
 }
 
 export function ExperienceChapter({ segment, language, labels, onModelOpen, onAROpen }: ExperienceChapterProps) {
+  const heroImageSize = segment.route === 'luxury' ? { width: 1498, height: 1050 } : { width: 1125, height: 822 }
+  const supportImageSize = segment.route === 'luxury' ? { width: 1122, height: 1402 } : { width: 900, height: 675 }
   const vars = {
     '--chapter-bg': segment.theme.background,
     '--chapter-surface': segment.theme.surface,
@@ -68,8 +70,10 @@ export function ExperienceChapter({ segment, language, labels, onModelOpen, onAR
           </div>
         </div>
         <div className={styles.media} data-testid={`${segment.id}-media`}>
-          <img src={segment.images.hero} alt="" loading="lazy" width="1125" height="822" />
-          {segment.images.support ? <img src={segment.images.support} alt="" loading="lazy" width="900" height="675" /> : null}
+          <img src={segment.images.hero} alt="" loading="lazy" width={heroImageSize.width} height={heroImageSize.height} />
+          {segment.images.support ? (
+            <img src={segment.images.support} alt="" loading="lazy" width={supportImageSize.width} height={supportImageSize.height} />
+          ) : null}
         </div>
         <div className={styles.demo} data-testid={`${segment.id}-demo`}>
           <DemoPreview

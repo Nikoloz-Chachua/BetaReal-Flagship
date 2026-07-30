@@ -6,8 +6,8 @@ export const localAssets = {
   },
   chapters: {
     luxury: {
-      hero: localAsset('/assets/chapters/luxury/interior-hero-maps.webp'),
-      support: localAsset('/assets/chapters/luxury/interior-terrace.jpg'),
+      hero: localAsset('/assets/chapters/luxury/interior-enhanced-wide.webp'),
+      support: localAsset('/assets/chapters/luxury/interior-enhanced-portrait.webp'),
       beefStroganoff: localAsset('/assets/chapters/luxury/dishes/mg-beef-stroganoff.webp'),
       beefFillet: localAsset('/assets/chapters/luxury/dishes/mg-beef-fillet.png'),
       gazpacho: localAsset('/assets/chapters/luxury/dishes/mg-gazpacho.webp'),
@@ -44,7 +44,7 @@ export const modelAssets = {
   },
   hotDog: {
     name: 'Hot Dog',
-    nameKa: 'ჰოთ დოგი',
+    nameKa: 'ჰოთ-დოგი',
     glb: 'https://pub-3c68559de18f4aee94d127e180937bdd.r2.dev/hot_dog_draco.glb',
     usdz: 'https://pub-3c68559de18f4aee94d127e180937bdd.r2.dev/hot_dog.usdz',
     poster: localAsset('/assets/models/hot_dog_poster.webp'),

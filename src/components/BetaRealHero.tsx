@@ -60,7 +60,7 @@ export function BetaRealHero({ language, text, onModelOpen }: BetaRealHeroProps)
             className={styles.phoneModelFrame}
             ariaLabel={
               language === 'ka'
-                ? `${modelAssets.burger.nameKa} ინტერაქტიული 3D პრევიუ`
+                ? `${modelAssets.burger.nameKa} ინტერაქტიული 3D ნიმუში`
                 : `${modelAssets.burger.name} interactive 3D preview`
             }
           />

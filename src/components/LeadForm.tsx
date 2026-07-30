@@ -161,7 +161,7 @@ export function LeadForm({ language, text, activeSegment, prospect }: LeadFormPr
       return
     }
     const safeState = sanitizeLeadState(state)
-    const message = buildLeadMessage(safeState, { ...context, prospect })
+    const message = buildLeadMessage(safeState, { ...context, prospect }, language)
     const whatsAppUrl = buildWhatsAppUrl(message)
     trackEvent('contact_form_submitted', { segment: state.category || activeSegment, ...context })
     const handle = window.open('', '_blank')
@@ -197,7 +197,7 @@ export function LeadForm({ language, text, activeSegment, prospect }: LeadFormPr
     setWhatsAppFallbackUrl(whatsAppUrl)
   }
 
-  const preparedMessage = buildLeadMessage(state, { ...context, prospect })
+  const preparedMessage = buildLeadMessage(state, { ...context, prospect }, language)
 
   return (
     <form className={styles.form} onSubmit={submit} noValidate>
@@ -320,7 +320,7 @@ export function LeadForm({ language, text, activeSegment, prospect }: LeadFormPr
           <span>{text.submit}</span>
         </button>
         <a
-          href={buildMailtoUrl(preparedMessage)}
+          href={buildMailtoUrl(preparedMessage, language)}
           onClick={() => trackEvent('external_contact_clicked', { segment: state.category || activeSegment, ...context })}
         >
           <Mail size={18} aria-hidden="true" />

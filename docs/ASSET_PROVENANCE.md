@@ -9,8 +9,10 @@ All copied assets came from `/home/gagi/Restaurant-AR-flagship`, which was inspe
 | `public/assets/brand/betareal-logo-white.png` | `img/betareal-logo-white.png` | Dark footer brand mark |
 | `public/assets/brand/betareal-logo-official.png` | User-provided downloaded official BetaReal logo asset | Current visible header, drawer, and footer BetaReal brand mark |
 | `public/favicon.svg` | `img/betareal-favicon.svg` | Site favicon |
-| `public/assets/chapters/luxury/interior-hero-maps.webp` | `img/baoma/interior-hero-maps.webp` | Cropped concept imagery for luxury dining design study; no client implication |
-| `public/assets/chapters/luxury/interior-terrace.jpg` | `img/baoma/interior-terrace.jpg` | Supporting concept imagery for luxury dining design study; no client implication |
+| `public/assets/chapters/luxury/interior-enhanced-wide.webp` | User-provided enhanced landscape asset | Active luxury dining hero atmosphere image; no client implication |
+| `public/assets/chapters/luxury/interior-enhanced-portrait.webp` | User-provided enhanced portrait asset | Active luxury dining supporting atmosphere image; no client implication |
+| `public/assets/chapters/luxury/interior-hero-maps.webp` | `img/baoma/interior-hero-maps.webp` | Legacy luxury atmosphere image retained in assets, no longer used by the visible flagship |
+| `public/assets/chapters/luxury/interior-terrace.jpg` | `img/baoma/interior-terrace.jpg` | Legacy luxury supporting image retained in assets, no longer used by the visible flagship |
 | `public/assets/chapters/luxury/dishes/trout-pomegranate.webp` | `/home/gagi/Restaurant-AR-flagship/img/baoma/dishes/trout-pomegranate.webp` | Legacy local food reference retained in assets, no longer used by visible luxury dish cards |
 | `public/assets/chapters/luxury/dishes/greek-salad.webp` | `/home/gagi/Restaurant-AR-flagship/img/baoma/dishes/greek-salad.webp` | Legacy local food reference retained in assets, no longer used by visible luxury dish cards |
 | `public/assets/chapters/luxury/dishes/dessert-spiral.webp` | `/home/gagi/Restaurant-AR-flagship/img/baoma/dishes/dessert-spiral.webp` | Legacy local food reference retained in assets, no longer used by visible luxury dish cards |

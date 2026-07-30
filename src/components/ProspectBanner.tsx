@@ -17,7 +17,7 @@ export function ProspectBanner({ restaurant, language, copy }: ProspectBannerPro
   if (!restaurant || !visible) return null
 
   return (
-    <aside className={styles.banner} aria-label={language === 'ka' ? 'პერსონალიზებული პრევიუ' : 'Personalized preview'}>
+    <aside className={styles.banner} aria-label={language === 'ka' ? 'პერსონალიზებული ნიმუში' : 'Personalized preview'}>
       <p>
         {copy.copy} <strong>{restaurant}</strong>
       </p>

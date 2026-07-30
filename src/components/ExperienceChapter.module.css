@@ -65,6 +65,16 @@
   filter: saturate(0.92);
 }
 
+.editorial .media img:first-child {
+  aspect-ratio: 1498 / 1050;
+  object-position: 48% 50%;
+}
+
+.editorial .media img:nth-child(2) {
+  aspect-ratio: 1122 / 1402;
+  object-position: 52% 48%;
+}
+
 .demo {
   grid-area: demo;
   align-self: start;
@@ -126,7 +136,7 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 42px;
+  min-height: 44px;
   border-radius: 999px;
   padding: 0 17px;
   font-weight: 840;
@@ -177,6 +187,31 @@
   max-width: 10.8ch;
   font-size: clamp(2.3rem, 4.2vw, 4.25rem);
   line-height: 0.94;
+}
+
+:global(html[lang='ka']) .kicker,
+:global(html[lang='ka']) .concept,
+:global(html[lang='ka']) .note {
+  font-family: var(--font-ka-sans);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+:global(html[lang='ka']) .chapter h2,
+:global(html[lang='ka']) .themeSerif h2,
+:global(html[lang='ka']) .themeClean h2,
+:global(html[lang='ka']) .themeHeavy h2,
+:global(html[lang='ka']) .themeCondensed h2 {
+  max-width: min(100%, 15ch);
+  font-family: var(--font-ka-sans);
+  font-weight: 720;
+  line-height: 1.12;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+:global(html[lang='ka']) .body {
+  line-height: 1.55;
 }
 
 .chapter.editorial {
@@ -384,5 +419,15 @@
   .actions {
     display: grid;
     margin-top: 14px;
+  }
+
+  :global(html[lang='ka']) .chapter h2,
+  :global(html[lang='ka']) .themeClean h2,
+  :global(html[lang='ka']) .themeHeavy h2,
+  :global(html[lang='ka']) .themeCondensed h2 {
+    max-width: 100%;
+    font-size: clamp(1.72rem, 9vw, 2.36rem);
+    line-height: 1.14;
+    text-wrap: wrap;
   }
 }

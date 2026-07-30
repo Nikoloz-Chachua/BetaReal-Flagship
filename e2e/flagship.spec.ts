@@ -722,11 +722,11 @@ test('Georgian names, unknown route, removed technology section, and AR loader f
   } else {
     await expect(page.getByRole('navigation', { name: 'ძირითადი ნავიგაცია' })).toBeVisible()
   }
-  await expect(page.getByText('ერთი კერძი. მისი გამოცდილების სამი გზა დაგემოვნებამდე.')).toBeVisible()
+  await expect(page.getByText('ერთი კერძი. დაგემოვნებამდე მისი გაცნობის სამი გზა.')).toBeVisible()
   await expect(page.getByRole('link', { name: '3D და AR' })).toHaveCount(0)
-  await expect(page.getByRole('button', { name: 'AR-ში განთავსება: შოკოლადის კრუასანი' }).first()).toBeVisible()
+  await expect(page.getByRole('button', { name: 'მაგიდაზე განთავსება AR-ით: შოკოლადის კრუასანი' }).first()).toBeVisible()
   await page.locator('#contact').scrollIntoViewIfNeeded()
   await expect(page.getByLabel('რესტორნის კატეგორია').getByRole('option', { name: 'აირჩიეთ' })).toHaveCount(1)
-  await expect(page.getByRole('complementary', { name: 'პერსონალიზებული პრევიუ' })).toBeVisible()
+  await expect(page.getByRole('complementary', { name: 'პერსონალიზებული ნიმუში' })).toBeVisible()
   expect(consoleErrors).toEqual([])
 })

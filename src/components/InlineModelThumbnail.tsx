@@ -125,7 +125,7 @@ export function InlineModelThumbnail({ model, itemId, label, language, segment, 
       data-inline-model-state={state}
       data-testid={`inline-model-${itemId}`}
       role="group"
-      aria-label={ariaLabel ?? `${label} interactive 3D thumbnail`}
+      aria-label={ariaLabel ?? (language === 'ka' ? `${label} ინტერაქტიული 3D მინიატურა` : `${label} interactive 3D thumbnail`)}
       aria-describedby={hintId}
       onClick={stopCardActivation}
       onPointerDown={stopCardActivation}

@@ -113,6 +113,8 @@ describe('segment architecture', () => {
   it('uses the official logo and keeps the luxury preview honest', () => {
     expect(localAssets.logos.official).toContain('/assets/brand/betareal-logo-official.png')
     expect(Object.values(localAssets.logos)).toEqual([localAssets.logos.official])
+    expect(localAssets.chapters.luxury.hero).toContain('/assets/chapters/luxury/interior-enhanced-wide.webp')
+    expect(localAssets.chapters.luxury.support).toContain('/assets/chapters/luxury/interior-enhanced-portrait.webp')
 
     const luxury = segments.find((segment) => segment.id === 'luxury-dining')
     expect(luxury?.items.map((item) => item.name.en)).toEqual(['Beef Fillet', 'Chocolate Croissant'])
@@ -184,11 +186,19 @@ describe('personalization', () => {
 
 describe('language and model loading', () => {
   it('switches visible content to Georgian and preserves route access', async () => {
+    const description = document.createElement('meta')
+    description.name = 'description'
+    document.head.append(description)
     render(<FlagshipPage />)
     await userEvent.click(screen.getByRole('button', { name: 'KA' }))
     expect(screen.getByRole('heading', { name: 'თქვენი მენიუ ეკრანს მიღმა.' })).toBeInTheDocument()
-    expect(screen.getByText('ერთი კერძი. მისი გამოცდილების სამი გზა დაგემოვნებამდე.')).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /პრემიუმი/ })).toHaveAttribute('href', '#luxury-dining')
+    expect(screen.getByText('ერთი კერძი. დაგემოვნებამდე მისი გაცნობის სამი გზა.')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /პრემიუმ რესტორნები/ })).toHaveAttribute('href', '#luxury-dining')
+    expect(document.title).toBe('BetaReal — ინტერაქტიული 3D და AR მენიუები რესტორნებისთვის.')
+    expect(description.content).toBe(
+      'BetaReal რესტორნებისთვის ქმნის ინდივიდუალურ ვებსაიტებსა და ციფრულ მენიუებს, სადაც სტუმრებს შეუძლიათ კერძები 3D-ში დაათვალიერონ და AR-ის საშუალებით საკუთარ მაგიდაზე განათავსონ.',
+    )
+    description.remove()
   })
 
   it('does not inject model-viewer until explicit interaction', async () => {
@@ -365,6 +375,29 @@ describe('lead flow and analytics', () => {
     expect(message).toContain('Restaurant: Demo Bistro')
     expect(buildWhatsAppUrl(message)).toMatch(/^https:\/\/wa\.me\/995593191707\?text=/)
     expect(decodeURIComponent(buildMailtoUrl(message))).toContain('betareal.ar@gmail.com')
+  })
+
+  it('builds localized Georgian prepared lead messages without English field leaks', () => {
+    const message = buildLeadMessage(
+      {
+        restaurant: 'დემო ბისტრო',
+        person: 'ნინო გიორგაძე',
+        contact: '+995 555 000 000',
+        category: 'social-dining',
+        existing: 'instagram.com/demo',
+        message: 'გვაინტერესებს 3D და AR',
+      },
+      { source: 'site', campaign: 'launch', prospect: 'დემო ბისტრო' },
+      'ka',
+    )
+    expect(message).toContain('BetaReal დემოს მოთხოვნა')
+    expect(message).toContain('რესტორანი: დემო ბისტრო')
+    expect(message).toContain('საკონტაქტო პირი: ნინო გიორგაძე')
+    expect(message).toContain('კატეგორია: თავშეყრის სივრცეები')
+    expect(message).toContain('შეტყობინება: გვაინტერესებს 3D და AR')
+    expect(message).not.toContain('Restaurant:')
+    expect(message).not.toContain('Category: social-dining')
+    expect(decodeURIComponent(buildMailtoUrl(message, 'ka'))).toContain('subject=BetaReal დემოს მოთხოვნა')
   })
 
   it('validates form accessibly and reports successful WhatsApp opening only with a handle', async () => {
@@ -566,11 +599,18 @@ describe('AR and routing behavior', () => {
     render(<FlagshipPage />)
     await userEvent.click(screen.getByRole('button', { name: 'KA' }))
     expect(screen.getByRole('navigation', { name: 'ძირითადი ნავიგაცია' })).toBeInTheDocument()
-    expect(screen.getByText('ერთი კერძი. მისი გამოცდილების სამი გზა დაგემოვნებამდე.')).toBeInTheDocument()
+    expect(screen.getByText('ერთი კერძი. დაგემოვნებამდე მისი გაცნობის სამი გზა.')).toBeInTheDocument()
     expect(screen.getByRole('option', { name: 'აირჩიეთ' })).toBeInTheDocument()
-    expect(screen.getByRole('complementary', { name: 'პერსონალიზებული პრევიუ' })).toBeInTheDocument()
-    expect(screen.getAllByRole('button', { name: '3D ნახვა: შოკოლადის კრუასანი' }).length).toBeGreaterThan(0)
-    expect(screen.getAllByRole('button', { name: 'AR-ში განთავსება: შოკოლადის კრუასანი' }).length).toBeGreaterThan(0)
+    expect(screen.getByRole('complementary', { name: 'პერსონალიზებული ნიმუში' })).toBeInTheDocument()
+    expect(screen.getAllByText('თქვენი რესტორანი').length).toBeGreaterThan(0)
+    expect(screen.queryByText('YourRestaurant')).not.toBeInTheDocument()
+    expect(screen.getAllByLabelText('მენიუს კატეგორიები').length).toBeGreaterThan(0)
+    expect(screen.queryByLabelText('Preview categories')).not.toBeInTheDocument()
+    expect(screen.getByLabelText('ბიგბურგერი ინტერაქტიული 3D ნიმუში')).toBeInTheDocument()
+    expect(screen.getAllByLabelText('შოკოლადის კრუასანი ინტერაქტიული 3D მინიატურა').length).toBeGreaterThan(0)
+    expect(screen.queryByLabelText(/interactive 3D thumbnail/i)).not.toBeInTheDocument()
+    expect(screen.getAllByRole('button', { name: '3D-ში ნახვა: შოკოლადის კრუასანი' }).length).toBeGreaterThan(0)
+    expect(screen.getAllByRole('button', { name: 'მაგიდაზე განთავსება AR-ით: შოკოლადის კრუასანი' }).length).toBeGreaterThan(0)
     expect(screen.getAllByRole('link', { name: '+995 593 19 17 07' })[0]).toHaveAttribute('href', `tel:${PRIMARY_PHONE_E164}`)
     expect(screen.getByRole('link', { name: '+995 599 00 03 05' })).toHaveAttribute('href', `tel:${SECONDARY_PHONE_E164}`)
   })

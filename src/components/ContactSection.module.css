@@ -21,6 +21,12 @@
   text-transform: uppercase;
 }
 
+:global(html[lang='ka']) .copy p {
+  font-family: var(--font-ka-sans);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
 .copy h2 {
   max-width: 10.8ch;
   margin: 0;
@@ -29,11 +35,24 @@
   line-height: 0.98;
 }
 
+:global(html[lang='ka']) .copy h2 {
+  max-width: min(100%, 14.5ch);
+  font-family: var(--font-ka-sans);
+  font-weight: 720;
+  line-height: 1.14;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
 .copy span {
   display: block;
   margin-top: 16px;
   color: rgba(255, 255, 255, 0.72);
   font-size: 1rem;
+}
+
+:global(html[lang='ka']) .copy span {
+  line-height: 1.55;
 }
 
 .section :global(form) {
@@ -52,5 +71,10 @@
 @media (max-width: 520px) {
   .inner {
     width: min(100% - 24px, 1160px);
+  }
+
+  :global(html[lang='ka']) .copy h2 {
+    max-width: 100%;
+    font-size: clamp(1.75rem, 9vw, 2.4rem);
   }
 }

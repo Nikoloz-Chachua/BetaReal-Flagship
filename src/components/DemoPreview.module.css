@@ -91,12 +91,17 @@
   display: flex;
   gap: 8px;
   overflow-x: auto;
-  padding: 10px 16px 2px;
+  padding: 10px 16px 8px;
+  scrollbar-width: none;
+}
+
+.categories::-webkit-scrollbar {
+  display: none;
 }
 
 .categories button {
   flex: 0 0 auto;
-  min-height: 38px;
+  min-height: 44px;
   border: 1px solid color-mix(in srgb, var(--chapter-ink) 14%, transparent);
   border-radius: 999px;
   background: transparent;
@@ -410,13 +415,13 @@
 
 .cardActions {
   display: grid;
-  grid-template-columns: 38px 1fr 1fr;
+  grid-template-columns: 44px minmax(44px, 1fr) minmax(44px, 1fr);
   gap: 7px;
   margin-top: 2px;
 }
 
 .cardActions[data-has-model='false'] {
-  grid-template-columns: 38px;
+  grid-template-columns: 44px;
 }
 
 .cardActions button {
@@ -424,8 +429,8 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  min-width: 38px;
-  min-height: 38px;
+  min-width: 44px;
+  min-height: 44px;
   border: 1px solid color-mix(in srgb, var(--chapter-ink) 14%, transparent);
   border-radius: 999px;
   background: var(--chapter-ink);
@@ -469,7 +474,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  min-height: 40px;
+  min-height: 44px;
   border-radius: 999px;
   background: var(--chapter-accent);
   color: #fff;
@@ -477,6 +482,32 @@
   font-size: 0.82rem;
   font-weight: 840;
   text-decoration: none;
+}
+
+:global(html[lang='ka']) .restaurantHeader p,
+:global(html[lang='ka']) .cardTop p,
+:global(html[lang='ka']) .previewFooter p,
+:global(html[lang='ka']) .detailCategory,
+:global(html[lang='ka']) .grid[data-layout='poster'] .card h3,
+:global(html[lang='ka']) .grid[data-layout='industrial'] .card h3 {
+  font-family: var(--font-ka-sans);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+:global(html[lang='ka']) .grid[data-layout='editorial'] .card h3,
+:global(html[lang='ka']) .card h3,
+:global(html[lang='ka']) .detail h3 {
+  font-family: var(--font-ka-sans);
+  font-weight: 720;
+  line-height: 1.16;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+:global(html[lang='ka']) .cardBody > p,
+:global(html[lang='ka']) .previewFooter p {
+  line-height: 1.55;
 }
 
 .detail {
@@ -560,10 +591,10 @@
   }
 
   .cardActions {
-    grid-template-columns: 38px minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-columns: 44px minmax(44px, 1fr) minmax(44px, 1fr);
   }
 
   .cardActions[data-has-model='false'] {
-    grid-template-columns: 38px;
+    grid-template-columns: 44px;
   }
 }

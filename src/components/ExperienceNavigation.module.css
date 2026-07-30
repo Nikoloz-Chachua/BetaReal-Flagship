@@ -17,7 +17,12 @@
   margin: 0 auto;
   overflow-x: auto;
   padding: 8px 0;
-  scrollbar-width: thin;
+  scroll-padding-inline: 12px;
+  scrollbar-width: none;
+}
+
+.scroller::-webkit-scrollbar {
+  display: none;
 }
 
 .scroller a {
@@ -25,7 +30,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 38px;
+  min-height: 44px;
   border: 1px solid var(--border);
   border-radius: 999px;
   background: var(--surface);
@@ -45,6 +50,6 @@
 @media (max-width: 520px) {
   .scroller {
     width: 100%;
-    padding-inline: 12px;
+    padding-inline: 12px 24px;
   }
 }

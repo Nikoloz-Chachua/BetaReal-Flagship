@@ -20,12 +20,12 @@ export function useLanguage() {
 
   useEffect(() => {
     document.documentElement.lang = languages[language].htmlLang
-    document.title = language === 'ka' ? 'BetaReal — ინტერაქტიული 3D და AR რესტორნის მენიუები.' : 'BetaReal — Interactive 3D and AR Restaurant Menus.'
+    document.title = language === 'ka' ? 'BetaReal — ინტერაქტიული 3D და AR მენიუები რესტორნებისთვის.' : 'BetaReal — Interactive 3D and AR Restaurant Menus.'
     const description = document.querySelector<HTMLMetaElement>('meta[name="description"]')
     if (description) {
       description.content =
         language === 'ka'
-          ? 'BetaReal ქმნის ინდივიდუალურ რესტორნის ვებსაიტებს და ციფრულ მენიუებს, სადაც სტუმარი კერძს 3D-ში ათვალიერებს და AR-ით საკუთარ მაგიდაზე ათავსებს.'
+          ? 'BetaReal რესტორნებისთვის ქმნის ინდივიდუალურ ვებსაიტებსა და ციფრულ მენიუებს, სადაც სტუმრებს შეუძლიათ კერძები 3D-ში დაათვალიერონ და AR-ის საშუალებით საკუთარ მაგიდაზე განათავსონ.'
           : 'BetaReal creates custom restaurant websites and digital menus where guests can inspect dishes in 3D and place them on their table in AR.'
     }
   }, [language])
