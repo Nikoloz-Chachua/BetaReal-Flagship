@@ -16,6 +16,7 @@ interface BetaRealHeroProps {
     view3d: string
     phoneTitle: string
     phoneCategory: string
+    visualClaim: string
     visualLabel: string
   }
   onModelOpen: () => void
@@ -64,7 +65,7 @@ export function BetaRealHero({ language, text, onModelOpen }: BetaRealHeroProps)
             }
           />
           <h2>{text.phoneTitle}</h2>
-          <p>{language === 'ka' ? '3D ნახვა · AR მაგიდაზე' : 'Inspect in 3D · place on table'}</p>
+          <p className={styles.phoneClaim}>{text.visualClaim}</p>
           <div className={styles.phoneActions}>
             <span>3D</span>
             <span>AR</span>

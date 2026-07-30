@@ -10,7 +10,6 @@ import { ModalPrimitive } from '../components/ModalPrimitive'
 import { ModelExperience } from '../components/ModelExperience'
 import { ProcessSection } from '../components/ProcessSection'
 import { ProspectBanner } from '../components/ProspectBanner'
-import { TechnologyDemo } from '../components/TechnologyDemo'
 import { modelAssets } from '../data/assets'
 import { isSegmentRoute, segments, segmentsByHash, segmentsByRoute } from '../data/segments'
 import type { PreviewItem, SegmentRoute } from '../data/types'
@@ -149,7 +148,6 @@ export function FlagshipPage({ initialSegment }: FlagshipPageProps) {
             onAROpen={openAR}
           />
         ))}
-        <TechnologyDemo language={language} text={t.tech} onAROpen={() => openAR()} />
         <BenefitsSection language={language} title={t.benefits.title} items={t.benefits.items} />
         <ProcessSection language={language} title={t.process.title} steps={t.process.steps} />
         <ContactSection language={language} text={t.contact} activeSegment={activeRoute} prospect={prospect} />
@@ -178,7 +176,7 @@ export function FlagshipPage({ initialSegment }: FlagshipPageProps) {
               segment={activeRoute}
               active
               arRequestKey={arRequestKey}
-              onARFallback={() => setArNotice(t.tech.fallback)}
+              onARFallback={() => setArNotice(t.model.arUnsupported)}
               fallbackDemoUrl={activeRoute ? segmentsByRoute[activeRoute].demoUrl : undefined}
               fallbackDemoLabel={t.demo.openFull}
             />

@@ -13,7 +13,6 @@ interface BetaRealHeaderProps {
   nav: {
     experiences: string
     how: string
-    tech: string
     contact: string
     request: string
     menu: string
@@ -28,7 +27,6 @@ interface BetaRealHeaderProps {
 const links = [
   ['#experiences', 'experiences'],
   ['#process', 'how'],
-  ['#technology', 'tech'],
   ['#contact', 'contact'],
 ] as const
 

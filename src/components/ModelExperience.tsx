@@ -102,7 +102,7 @@ export function ModelViewer({
         <img src={model.poster} alt={language === 'ka' ? model.nameKa : model.name} loading="lazy" width="900" height="900" />
         <button className={styles.start} type="button" onClick={() => void start()}>
           <Rotate3D size={19} aria-hidden="true" />
-          <span>{text.tech.start3d}</span>
+          <span>{text.model.start3d}</span>
         </button>
       </div>
     )
@@ -158,7 +158,7 @@ export function ModelViewer({
           onClick={() => void startAR()}
         >
           <ScanLine size={18} aria-hidden="true" />
-          <span>{text.tech.arCta}</span>
+          <span>{text.model.arCta}</span>
         </button>
       </div>
       {unsupported ? <UnsupportedARState label={text.model.arUnsupported} /> : null}

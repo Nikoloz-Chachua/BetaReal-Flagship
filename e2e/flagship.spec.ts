@@ -318,6 +318,7 @@ test('official branding and compact hero phone stay stable across key viewports'
     await page.setViewportSize({ width: size.width, height: size.height })
     await page.goto('/')
     await expect(page.getByTestId('brand-logo-header')).toHaveAttribute('src', /\/assets\/brand\/betareal-logo-official\.png$/)
+    await expect(page.getByText('ONE DISH. THREE WAYS TO EXPERIENCE IT BEFORE TASTING.')).toBeVisible()
 
     const phoneMetrics = await page.getByTestId('hero-phone').evaluate((element) => {
       const rect = element.getBoundingClientRect()
@@ -669,7 +670,7 @@ test('reduced motion still exposes primary content', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Built for Busy Places.' })).toBeVisible()
 })
 
-test('technology tabs, Georgian names, unknown route, and AR loader failure fallback behave in browser', async ({ page }) => {
+test('Georgian names, unknown route, removed technology section, and AR loader failure fallback behave in browser', async ({ page }) => {
   const consoleErrors: string[] = []
   page.on('console', (message) => {
     if (message.type() === 'error') consoleErrors.push(message.text())
@@ -692,40 +693,17 @@ test('technology tabs, Georgian names, unknown route, and AR loader failure fall
   await expect(page).toHaveURL(/\/unknown\?lang=ka$/)
 
   await page.goto('/?restaurant=Demo%20Bistro')
-  const tablist = page.getByRole('tablist', { name: 'Technology states' })
-  await tablist.getByRole('tab', { name: 'Menu View' }).focus()
-  await page.keyboard.press('ArrowRight')
-  await expect(tablist.getByRole('tab', { name: 'Interactive 3D' })).toBeFocused()
-  await page.keyboard.press('End')
-  await expect(tablist.getByRole('tab', { name: 'Augmented Reality' })).toBeFocused()
-  await expect(page.getByRole('button', { name: 'View on table' })).toBeVisible()
-  const tabRelationships = await page.evaluate(() => {
-    return Array.from(document.querySelectorAll<HTMLElement>('[role="tab"]')).map((tab) => {
-      const panelId = tab.getAttribute('aria-controls')
-      const panel = panelId ? document.getElementById(panelId) : null
-      return {
-        tabId: tab.id,
-        panelId,
-        panelExists: Boolean(panel),
-        labelledBy: panel?.getAttribute('aria-labelledby') ?? null,
-      }
-    })
-  })
-  expect(tabRelationships).toEqual(
-    expect.arrayContaining([
-      expect.objectContaining({ tabId: 'technology-tab-menu', panelId: 'technology-panel-menu', panelExists: true, labelledBy: 'technology-tab-menu' }),
-      expect.objectContaining({ tabId: 'technology-tab-model', panelId: 'technology-panel-model', panelExists: true, labelledBy: 'technology-tab-model' }),
-      expect.objectContaining({ tabId: 'technology-tab-ar', panelId: 'technology-panel-ar', panelExists: true, labelledBy: 'technology-tab-ar' }),
-    ]),
-  )
+  await expect(page.getByText('ONE DISH. THREE WAYS TO EXPERIENCE IT BEFORE TASTING.')).toBeVisible()
+  await expect(page.locator('#technology')).toHaveCount(0)
+  await expect(page.getByRole('link', { name: '3D & AR' })).toHaveCount(0)
 
-  await page.getByRole('button', { name: 'View on table' }).click()
+  await page.getByRole('button', { name: 'Place in AR: Chocolate Croissant' }).first().click()
   const arDialog = page.getByRole('dialog')
   await expect(arDialog).toBeVisible()
   await expect(page.getByText("AR isn't available here, so the interactive 3D view is open.").first()).toBeVisible()
   await expect(arDialog.getByRole('button', { name: 'Retry 3D viewer' })).toBeVisible()
   await expect(arDialog.getByRole('link', { name: 'Open Full Demo', exact: true })).toBeVisible()
-  await expect(arDialog.getByRole('img', { name: 'BigBurger' })).toBeVisible()
+  await expect(arDialog.getByRole('img', { name: 'Croissant' })).toBeVisible()
   await page.keyboard.press('Escape')
 
   const kaButton = page.getByRole('button', { name: 'KA' })
@@ -744,9 +722,8 @@ test('technology tabs, Georgian names, unknown route, and AR loader failure fall
   } else {
     await expect(page.getByRole('navigation', { name: 'ძირითადი ნავიგაცია' })).toBeVisible()
   }
-  await expect(page.getByRole('tablist', { name: 'ტექნოლოგიის მდგომარეობები' })).toBeVisible()
-  await expect(page.getByRole('tab', { name: 'გაფართოებული რეალობა' })).toBeVisible()
-  await expect(page.getByRole('button', { name: 'მაგიდაზე ნახვა' })).toBeVisible()
+  await expect(page.getByText('ერთი კერძი. მისი გამოცდილების სამი გზა დაგემოვნებამდე.')).toBeVisible()
+  await expect(page.getByRole('link', { name: '3D და AR' })).toHaveCount(0)
   await expect(page.getByRole('button', { name: 'AR-ში განთავსება: შოკოლადის კრუასანი' }).first()).toBeVisible()
   await page.locator('#contact').scrollIntoViewIfNeeded()
   await expect(page.getByLabel('რესტორნის კატეგორია').getByRole('option', { name: 'აირჩიეთ' })).toHaveCount(1)

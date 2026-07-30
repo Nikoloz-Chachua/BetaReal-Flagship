@@ -187,6 +187,7 @@ describe('language and model loading', () => {
     render(<FlagshipPage />)
     await userEvent.click(screen.getByRole('button', { name: 'KA' }))
     expect(screen.getByRole('heading', { name: 'თქვენი მენიუ ეკრანს მიღმა.' })).toBeInTheDocument()
+    expect(screen.getByText('ერთი კერძი. მისი გამოცდილების სამი გზა დაგემოვნებამდე.')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /პრემიუმი/ })).toHaveAttribute('href', '#luxury-dining')
   })
 
@@ -209,6 +210,7 @@ describe('language and model loading', () => {
 
     render(<FlagshipPage />)
     expect(screen.queryByText('Real model after tap')).not.toBeInTheDocument()
+    expect(screen.getByText('ONE DISH. THREE WAYS TO EXPERIENCE IT BEFORE TASTING.')).toBeInTheDocument()
     const heroViewer = screen.getByTestId('inline-model-hero-bigburger')
     expect(heroViewer).toHaveAttribute('data-inline-model-state', 'initial')
     expect(within(heroViewer).getByRole('img', { name: 'BigBurger' })).toBeInTheDocument()
@@ -551,34 +553,12 @@ describe('AR and routing behavior', () => {
     expect(document.documentElement).toHaveAttribute('lang', 'ka')
   })
 
-  it('implements roving keyboard navigation for technology tabs', async () => {
+  it('removes the standalone technology section and dead navigation link', async () => {
     render(<FlagshipPage />)
-    const tablist = screen.getByRole('tablist', { name: 'Technology states' })
-    const menu = within(tablist).getByRole('tab', { name: 'Menu View' })
-    const model = within(tablist).getByRole('tab', { name: 'Interactive 3D' })
-    const ar = within(tablist).getByRole('tab', { name: 'Augmented Reality' })
-
-    menu.focus()
-    await userEvent.keyboard('{ArrowRight}')
-    expect(model).toHaveFocus()
-    expect(model).toHaveAttribute('aria-selected', 'true')
-    expect(model).toHaveAttribute('aria-controls', 'technology-panel-model')
-    await userEvent.keyboard('{End}')
-    expect(ar).toHaveFocus()
-    expect(screen.getByRole('tabpanel')).toHaveAttribute('aria-labelledby', 'technology-tab-ar')
-    expect(screen.getByRole('button', { name: 'View on table' })).toBeInTheDocument()
-    await userEvent.keyboard('{Home}')
-    expect(menu).toHaveFocus()
-
-    const allTabs = within(tablist).getAllByRole('tab')
-    const allPanels = screen.getAllByRole('tabpanel', { hidden: true })
-    expect(allPanels).toHaveLength(3)
-    for (const tab of allTabs) {
-      const panelId = tab.getAttribute('aria-controls')
-      const panel = panelId ? document.getElementById(panelId) : null
-      expect(panel).toBeInTheDocument()
-      expect(panel).toHaveAttribute('aria-labelledby', tab.id)
-    }
+    expect(document.getElementById('technology')).toBeNull()
+    expect(screen.queryByRole('heading', { name: 'ONE DISH. THREE WAYS TO EXPERIENCE IT.' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('tablist', { name: 'Technology states' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: '3D & AR' })).not.toBeInTheDocument()
   })
 
   it('localizes representative Georgian accessible names and contact facts', async () => {
@@ -586,8 +566,7 @@ describe('AR and routing behavior', () => {
     render(<FlagshipPage />)
     await userEvent.click(screen.getByRole('button', { name: 'KA' }))
     expect(screen.getByRole('navigation', { name: 'ძირითადი ნავიგაცია' })).toBeInTheDocument()
-    expect(screen.getByRole('tablist', { name: 'ტექნოლოგიის მდგომარეობები' })).toBeInTheDocument()
-    expect(screen.getByRole('tab', { name: 'გაფართოებული რეალობა' })).toBeInTheDocument()
+    expect(screen.getByText('ერთი კერძი. მისი გამოცდილების სამი გზა დაგემოვნებამდე.')).toBeInTheDocument()
     expect(screen.getByRole('option', { name: 'აირჩიეთ' })).toBeInTheDocument()
     expect(screen.getByRole('complementary', { name: 'პერსონალიზებული პრევიუ' })).toBeInTheDocument()
     expect(screen.getAllByRole('button', { name: '3D ნახვა: შოკოლადის კრუასანი' }).length).toBeGreaterThan(0)
