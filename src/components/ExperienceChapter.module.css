@@ -77,18 +77,6 @@
   object-position: 52% 48%;
 }
 
-.editorial .media {
-  height: 260px;
-  align-items: stretch;
-}
-
-.editorial .media img,
-.editorial .media img:first-child,
-.editorial .media img:nth-child(2) {
-  height: 100%;
-  aspect-ratio: auto;
-}
-
 .demo {
   grid-area: demo;
   align-self: start;
