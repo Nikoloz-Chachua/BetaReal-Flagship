@@ -214,12 +214,15 @@
 :global(html[lang='ka']) .themeClean h2,
 :global(html[lang='ka']) .themeHeavy h2,
 :global(html[lang='ka']) .themeCondensed h2 {
-  max-width: min(100%, 15ch);
+  max-width: 100%;
   font-family: var(--font-ka-sans);
+  font-size: clamp(2.1rem, 3.4vw, 3.75rem);
   font-weight: 720;
   line-height: 1.12;
   letter-spacing: 0;
+  overflow-wrap: anywhere;
   text-transform: none;
+  text-wrap: pretty;
 }
 
 :global(html[lang='ka']) .body {
@@ -250,8 +253,8 @@
 }
 
 @media (min-width: 981px) {
-  :global(html[lang='ka']) .editorial .story {
-    transform: translateX(-24px);
+  :global(html[lang='ka']) .chapter .story {
+    transform: translateX(-36px);
   }
 }
 
