@@ -69,6 +69,27 @@ test('hero phone 3D and AR buttons open and activate the shared burger experienc
   await expect.poll(() => page.evaluate(() => window.__modelViewerARActivated)).toBe(true)
 })
 
+test('mobile header exposes language switching without opening the drawer', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.goto('/')
+
+  const menu = page.getByRole('button', { name: 'მენიუს გახსნა' })
+  const language = page.getByRole('button', { name: 'ინგლისურზე გადართვა' })
+  await expect(menu).toBeVisible()
+  await expect(language).toBeVisible()
+
+  const [menuBox, languageBox] = await Promise.all([menu.boundingBox(), language.boundingBox()])
+  expect(menuBox).not.toBeNull()
+  expect(languageBox).not.toBeNull()
+  expect(languageBox!.x).toBeGreaterThan(menuBox!.x)
+  expect(languageBox!.x + languageBox!.width).toBeLessThanOrEqual(390)
+
+  await language.click()
+  await expect(page.getByRole('heading', { name: 'YOUR MENU, BEYOND THE SCREEN.' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Switch to Georgian' })).toBeVisible()
+  await expect(page.getByRole('dialog', { name: 'Mobile navigation' })).toHaveCount(0)
+})
+
 test('deep links, navigation, lazy model loading, drawer, modal, and blocked form fallback work', async ({ page }) => {
   const consoleErrors: string[] = []
   page.on('console', (message) => {

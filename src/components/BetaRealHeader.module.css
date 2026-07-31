@@ -51,6 +51,7 @@
 .actions {
   display: inline-flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 10px;
 }
 
@@ -104,6 +105,19 @@
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.06);
   color: #fff;
+}
+
+.mobileLanguage {
+  display: none;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 999px;
+  background: #fff;
+  color: #07111f;
+  font-size: 0.76rem;
+  font-weight: 860;
 }
 
 .drawerBackdrop {
@@ -198,5 +212,9 @@
   .request,
   .lang {
     display: none;
+  }
+
+  .mobileLanguage {
+    display: grid;
   }
 }

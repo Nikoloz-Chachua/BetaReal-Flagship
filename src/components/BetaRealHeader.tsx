@@ -78,6 +78,15 @@ export function BetaRealHeader({ language, setLanguage, nav }: BetaRealHeaderPro
           <button className={styles.menuButton} type="button" onClick={() => setOpen(true)} aria-label={nav.menu}>
             <Menu size={22} aria-hidden="true" />
           </button>
+          <button
+            className={styles.mobileLanguage}
+            type="button"
+            onClick={() => setLanguage(language === 'ka' ? 'en' : 'ka')}
+            aria-label={language === 'ka' ? 'ინგლისურზე გადართვა' : 'Switch to Georgian'}
+            title={language === 'ka' ? 'English' : 'ქართული'}
+          >
+            {language === 'ka' ? 'EN' : 'KA'}
+          </button>
         </div>
       </div>
       {open ? (
