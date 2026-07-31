@@ -145,7 +145,12 @@ export function FlagshipPage({ initialSegment }: FlagshipPageProps) {
       </a>
       <BetaRealHeader language={language} setLanguage={setLanguage} nav={t.nav} />
       <main id="main">
-        <BetaRealHero language={language} text={t.hero} onModelOpen={() => openModel()} />
+        <BetaRealHero
+          language={language}
+          text={t.hero}
+          onModelOpen={() => openModel()}
+          onAROpen={() => openAR()}
+        />
         <ExperienceNavigation language={language} activeSection={activeSection} label={t.nav.experiencesLabel} />
         {segments.map((segment) => (
           <ExperienceChapter

@@ -6,6 +6,7 @@ const MODEL_VIEWER_MAX_POLAR_DEG = 70
 declare global {
   interface Window {
     __analyticsEvents: Array<Record<string, string | undefined>>
+    __modelViewerARActivated?: boolean
   }
 }
 
@@ -21,7 +22,7 @@ async function installModelViewerStub(page: Page, options: { failScript?: boolea
           theta = 20;
           phi = 66;
           radius = 96;
-          activateAR = async () => undefined;
+          activateAR = async () => { window.__modelViewerARActivated = true; };
           maxPhiDeg() {
             const parts = (this.getAttribute('max-camera-orbit') || '').trim().split(/\\s+/);
             const phi = Number.parseFloat(parts[1] || '');
@@ -49,6 +50,22 @@ async function installModelViewerStub(page: Page, options: { failScript?: boolea
     void route.fulfill({ status: 200, contentType: 'text/javascript', body })
   })
 }
+
+test('hero phone 3D and AR buttons open and activate the shared burger experience', async ({ page }) => {
+  await installModelViewerStub(page)
+  await page.goto('/?lang=en')
+  const phone = page.getByTestId('hero-phone')
+
+  await phone.getByRole('button', { name: 'View in 3D: BigBurger' }).click()
+  let dialog = page.getByRole('dialog')
+  await expect(dialog.getByRole('heading', { name: 'BigBurger' })).toBeVisible()
+  await dialog.getByRole('button', { name: 'Close 3D viewer' }).click()
+
+  await phone.getByRole('button', { name: 'Place in AR: BigBurger' }).click()
+  dialog = page.getByRole('dialog')
+  await expect(dialog.getByRole('heading', { name: 'BigBurger' })).toBeVisible()
+  await expect.poll(() => page.evaluate(() => window.__modelViewerARActivated)).toBe(true)
+})
 
 test('deep links, navigation, lazy model loading, drawer, modal, and blocked form fallback work', async ({ page }) => {
   const consoleErrors: string[] = []

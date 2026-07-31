@@ -20,9 +20,10 @@ interface BetaRealHeroProps {
     visualLabel: string
   }
   onModelOpen: () => void
+  onAROpen: () => void
 }
 
-export function BetaRealHero({ language, text, onModelOpen }: BetaRealHeroProps) {
+export function BetaRealHero({ language, text, onModelOpen, onAROpen }: BetaRealHeroProps) {
   return (
     <section className={styles.hero} aria-labelledby="hero-title">
       <div className={styles.copy}>
@@ -67,8 +68,20 @@ export function BetaRealHero({ language, text, onModelOpen }: BetaRealHeroProps)
           <h2>{text.phoneTitle}</h2>
           <p className={styles.phoneClaim}>{text.visualClaim}</p>
           <div className={styles.phoneActions}>
-            <span>3D</span>
-            <span>AR</span>
+            <button
+              type="button"
+              onClick={onModelOpen}
+              aria-label={language === 'ka' ? '3D-ში ნახვა: ბიგბურგერი' : 'View in 3D: BigBurger'}
+            >
+              3D
+            </button>
+            <button
+              type="button"
+              onClick={onAROpen}
+              aria-label={language === 'ka' ? 'მაგიდაზე განთავსება AR-ით: ბიგბურგერი' : 'Place in AR: BigBurger'}
+            >
+              AR
+            </button>
           </div>
         </div>
       </div>

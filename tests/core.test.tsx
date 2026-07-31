@@ -226,6 +226,23 @@ describe('language and model loading', () => {
     await waitFor(() => expect(document.querySelector('script[data-betareal-model-viewer]')).toBeInTheDocument())
   })
 
+  it('wires the hero phone 3D and AR buttons to the shared model experience', async () => {
+    vi.spyOn(modelViewer, 'ensureModelViewerScript').mockResolvedValue(true)
+    vi.spyOn(modelViewer, 'launchModelViewerAR').mockResolvedValue(false)
+    render(<FlagshipPage />)
+    const phone = screen.getByTestId('hero-phone')
+
+    await userEvent.click(within(phone).getByRole('button', { name: 'View in 3D: BigBurger' }))
+    let dialog = await screen.findByRole('dialog')
+    expect(within(dialog).getByRole('heading', { name: 'BigBurger' })).toBeVisible()
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Close 3D viewer' }))
+
+    await userEvent.click(within(phone).getByRole('button', { name: 'Place in AR: BigBurger' }))
+    dialog = await screen.findByRole('dialog')
+    expect(within(dialog).getByRole('heading', { name: 'BigBurger' })).toBeVisible()
+    await waitFor(() => expect(modelViewer.launchModelViewerAR).toHaveBeenCalled())
+  })
+
   it('only renders 3D and AR card controls for model-enabled items', () => {
     render(<FlagshipPage />)
     expect(screen.queryAllByRole('button', { name: /^3D$/ })).toHaveLength(0)

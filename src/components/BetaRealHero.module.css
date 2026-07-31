@@ -165,13 +165,16 @@
   padding-top: 14px;
 }
 
-.phoneActions span {
+.phoneActions button {
   display: grid;
   place-items: center;
   min-height: 44px;
+  border: 0;
   border-radius: 999px;
   background: var(--ink);
   color: #fff;
+  cursor: pointer;
+  font: inherit;
   font-weight: 840;
 }
 
@@ -197,7 +200,7 @@
   line-height: 1.55;
 }
 
-.phoneActions span:last-child {
+.phoneActions button:last-child {
   background: var(--accent);
 }
 
