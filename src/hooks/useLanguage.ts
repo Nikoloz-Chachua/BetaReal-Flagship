@@ -8,7 +8,7 @@ export function useLanguage() {
   const [language, setLanguageState] = useState<Language>(() => {
     const params = new URLSearchParams(window.location.search)
     const value = params.get('lang')
-    return isLanguage(value) ? value : 'en'
+    return isLanguage(value) ? value : 'ka'
   })
 
   const setLanguage = useCallback((next: Language) => {

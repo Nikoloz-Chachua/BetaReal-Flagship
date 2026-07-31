@@ -60,7 +60,7 @@ test('deep links, navigation, lazy model loading, drawer, modal, and blocked for
     window.open = () => null
   })
 
-  await page.goto('/?restaurant=Demo%20Bistro&utm_source=qa&utm_campaign=smoke')
+  await page.goto('/?lang=en&restaurant=Demo%20Bistro&utm_source=qa&utm_campaign=smoke')
   await expect(page.getByRole('heading', { name: 'YOUR MENU, BEYOND THE SCREEN.' })).toBeVisible()
   await expect(page.getByText('Demo Bistro')).toBeVisible()
   await expect(page.locator('script[data-betareal-model-viewer]')).toHaveCount(1)
@@ -105,7 +105,7 @@ test('lead form opens a real prepared WhatsApp popup and preserves spaced multil
   await context.route('https://wa.me/**', (route) =>
     route.fulfill({ status: 200, contentType: 'text/html', body: '<!doctype html><title>WhatsApp prepared</title>' }),
   )
-  await page.goto('/')
+  await page.goto('/?lang=en')
   await page.locator('#contact').scrollIntoViewIfNeeded()
   const pageCountBefore = context.pages().length
   await page.getByLabel('Restaurant name').fill('Demo Bistro')
@@ -137,7 +137,7 @@ test('query segment deep link emits cafe as the initial section analytics event'
       window.__analyticsEvents.push((event as CustomEvent).detail)
     })
   })
-  await page.goto('/?segment=cafe&restaurant=Demo%20Bistro&utm_source=qa&utm_campaign=smoke')
+  await page.goto('/?lang=en&segment=cafe&restaurant=Demo%20Bistro&utm_source=qa&utm_campaign=smoke')
   await page.waitForFunction(() => window.__analyticsEvents.some((event) => event.event === 'experience_section_viewed'))
   const sectionViews = await page.evaluate(() => window.__analyticsEvents.filter((event) => event.event === 'experience_section_viewed'))
   expect(sectionViews[0]).toMatchObject({ segment: 'cafe', source: 'qa', campaign: 'smoke' })
@@ -154,7 +154,7 @@ test('responsive layouts avoid horizontal overflow and keep headings visible', a
     { width: 1920, height: 1080 },
   ]) {
     await page.setViewportSize(size)
-    await page.goto('/')
+    await page.goto('/?lang=en')
     await expect(page.getByRole('heading', { name: 'YOUR MENU, BEYOND THE SCREEN.' })).toBeVisible()
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)
     expect(overflow, `overflow at ${size.width}`).toBe(false)
@@ -186,9 +186,37 @@ test('responsive layouts avoid horizontal overflow and keep headings visible', a
   }
 })
 
+test('Georgian is the first-load default and the larger model modal keeps controls visible', async ({ page }) => {
+  await installModelViewerStub(page)
+  for (const size of [
+    { width: 320, height: 568 },
+    { width: 390, height: 844 },
+    { width: 1440, height: 920 },
+  ]) {
+    await page.setViewportSize(size)
+    await page.goto('/')
+    await expect(page.locator('html')).toHaveAttribute('lang', 'ka')
+    await expect(page.getByRole('heading', { name: 'თქვენი მენიუ ეკრანს მიღმა.' })).toBeVisible()
+    await page.getByRole('button', { name: /კერძის 3D-ში ნახვა/ }).click()
+    const dialog = page.getByRole('dialog')
+    await expect(dialog).toBeVisible()
+    await expect(dialog.getByRole('button', { name: '3D ხედის დახურვა' })).toBeVisible()
+    await expect(dialog.getByRole('button', { name: 'AR-ის გამოცდა' })).toBeVisible()
+    const metrics = await dialog.evaluate((element) => {
+      const rect = element.getBoundingClientRect()
+      const viewer = element.querySelector('model-viewer')?.getBoundingClientRect()
+      return { width: rect.width, top: rect.top, bottom: rect.bottom, viewerHeight: viewer?.height ?? 0 }
+    })
+    expect(metrics.top).toBeGreaterThanOrEqual(0)
+    expect(metrics.bottom).toBeLessThanOrEqual(size.height + 1)
+    expect(metrics.viewerHeight).toBeGreaterThanOrEqual(size.height <= 568 ? 240 : 400)
+    if (size.width >= 1000) expect(metrics.width).toBeGreaterThanOrEqual(1000)
+  }
+})
+
 test('chapter tiers have distinct backgrounds, surfaces, and readable story contrast', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 920 })
-  await page.goto('/')
+  await page.goto('/?lang=en')
   const tiers = await page.evaluate(() => {
     function rgbParts(value: string) {
       if (value.startsWith('#')) {
@@ -235,7 +263,7 @@ test('chapter tiers have distinct backgrounds, surfaces, and readable story cont
       const inactivePill = preview.querySelector<HTMLElement>('[aria-label="Preview categories"] span:not([data-active="true"])')
       const activePill = preview.querySelector<HTMLElement>('[aria-label="Preview categories"] span[data-active="true"]')
       const stage = preview.querySelector<HTMLElement>('[data-testid="inline-model-cafe-croissant"]')
-      const primaryAction = preview.querySelector<HTMLElement>('article button[aria-label^="View in 3D"]')
+      const primaryAction = preview.querySelector<HTMLElement>('article button[aria-label^="Place in AR"]')
       return {
         id,
         chapterBackgroundColor: chapterStyle.backgroundColor,
@@ -317,7 +345,7 @@ test('official branding and compact hero phone stay stable across key viewports'
     { width: 1440, height: 920, minPhoneWidth: 300, maxPhoneWidth: 320, minPhoneHeight: 520, maxPhoneHeight: 570 },
   ]) {
     await page.setViewportSize({ width: size.width, height: size.height })
-    await page.goto('/')
+    await page.goto('/?lang=en')
     await expect(page.getByTestId('brand-logo-header')).toHaveAttribute('src', /\/assets\/brand\/betareal-logo-official\.png$/)
     await expect(page.getByText('ONE DISH. THREE WAYS TO EXPERIENCE IT BEFORE TASTING.')).toBeVisible()
 
@@ -341,7 +369,7 @@ test('official branding and compact hero phone stay stable across key viewports'
 test('hero phone uses an inline model viewer with stable layers and direct gestures', async ({ page }) => {
   await installModelViewerStub(page)
   await page.setViewportSize({ width: 1440, height: 920 })
-  await page.goto('/')
+  await page.goto('/?lang=en')
 
   await expect(page.getByText('Real model after tap')).toHaveCount(0)
   const heroFrame = page.getByTestId('inline-model-hero-bigburger')
@@ -392,7 +420,7 @@ test('hero phone uses an inline model viewer with stable layers and direct gestu
 
 test('hero inline model keeps one visible layer through loading, ready, and failure states', async ({ page }) => {
   await installModelViewerStub(page, { autoLoad: false })
-  await page.goto('/')
+  await page.goto('/?lang=en')
   const heroFrame = page.getByTestId('inline-model-hero-bigburger')
   await expect(heroFrame).toHaveAttribute('data-inline-model-state', 'loading')
 
@@ -457,7 +485,7 @@ test('hero inline model keeps one visible layer through loading, ready, and fail
 
 test('mobile chapter demo follows story and unavailable model controls are absent', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 })
-  await page.goto('/')
+  await page.goto('/?lang=en')
   await page.locator('#modern-cafe').evaluate((element) => element.scrollIntoView({ block: 'start', behavior: 'instant' }))
   await expect(page.getByTestId('modern-cafe-demo')).toBeVisible()
   const flow = await page.evaluate(() => {
@@ -476,14 +504,18 @@ test('mobile chapter demo follows story and unavailable model controls are absen
   expect(flow!.demoTop - flow!.storyBottom).toBeLessThan(28)
   expect(flow!.mediaDisplay).toBe('none')
   await expect(page.locator('#modern-cafe article button:disabled')).toHaveCount(0)
-  await expect(page.getByRole('button', { name: 'View in 3D: Chia Fruit Bowl' })).toHaveCount(0)
-  await expect(page.getByTestId('modern-cafe-demo').getByRole('button', { name: 'View in 3D: Chocolate Croissant' })).toBeVisible()
+  const cafeDemo = page.getByTestId('modern-cafe-demo')
+  await expect(cafeDemo.locator('article')).toHaveCount(3)
+  for (const name of ['Chocolate Croissant', 'Beef Steak', 'Benedict with Bacon']) {
+    await expect(cafeDemo.getByRole('button', { name: `View in 3D: ${name}` })).toBeVisible()
+    await expect(cafeDemo.getByRole('button', { name: `Place in AR: ${name}` })).toBeVisible()
+  }
 })
 
 test('luxury preview removes unavailable model cards and uses an intentional two-card layout', async ({ page }) => {
   await installModelViewerStub(page)
   await page.setViewportSize({ width: 1440, height: 920 })
-  await page.goto('/')
+  await page.goto('/?lang=en')
   await page.locator('#luxury-dining').evaluate((element) => element.scrollIntoView({ block: 'start', behavior: 'instant' }))
   const luxuryDemo = page.getByTestId('luxury-dining-demo')
   await expect(luxuryDemo.getByText('Beef Stroganoff')).toHaveCount(0)
@@ -507,20 +539,14 @@ test('luxury preview removes unavailable model cards and uses an intentional two
   expect(layout.gap).toBeGreaterThanOrEqual(16)
 })
 
-test('inline model thumbnails preserve card media geometry and direct gestures do not open dialogs', async ({ page }) => {
+test('Monday Greens model thumbnails preserve card media geometry and open the correct item', async ({ page }) => {
   await installModelViewerStub(page)
   await page.setViewportSize({ width: 390, height: 844 })
-  await page.goto('/')
+  await page.goto('/?lang=en')
   await page.locator('#modern-cafe').evaluate((element) => element.scrollIntoView({ block: 'start', behavior: 'instant' }))
 
   const cafeDemo = page.getByTestId('modern-cafe-demo')
-  const photo = cafeDemo.getByRole('img', { name: 'Chia Fruit Bowl' })
-  await expect(photo).toBeVisible()
-  await expect(cafeDemo.getByRole('button', { name: 'Details: Chia Fruit Bowl' })).toHaveCount(0)
   await expect(cafeDemo.getByLabel('Preview categories').locator('button')).toHaveCount(0)
-  await expect(cafeDemo.getByTestId('inline-model-cafe-chia')).toHaveCount(0)
-  await photo.click()
-  await expect(page.getByRole('dialog')).toHaveCount(0)
 
   const thumbnail = page.getByTestId('inline-model-cafe-croissant')
   await thumbnail.scrollIntoViewIfNeeded()
@@ -565,17 +591,17 @@ test('inline model thumbnails preserve card media geometry and direct gestures d
   await viewer.dispatchEvent('pointerup')
   await expect(page.getByRole('dialog')).toHaveCount(0)
 
-  await cafeDemo.getByRole('button', { name: 'View in 3D: Chocolate Croissant' }).click()
-  await expect(page.getByRole('dialog').filter({ has: page.getByRole('heading', { name: 'Chocolate Croissant' }) })).toBeVisible()
+  await cafeDemo.getByRole('button', { name: 'View in 3D: Beef Steak' }).click()
+  await expect(page.getByRole('dialog').filter({ has: page.getByRole('heading', { name: 'Beef Steak' }) })).toBeVisible()
   await page.keyboard.press('Escape')
-  await cafeDemo.getByRole('button', { name: 'Place in AR: Chocolate Croissant' }).click()
-  await expect(page.getByRole('dialog').filter({ has: page.getByRole('heading', { name: 'Chocolate Croissant' }) })).toBeVisible()
+  await cafeDemo.getByRole('button', { name: 'Place in AR: Benedict with Bacon' }).click()
+  await expect(page.getByRole('dialog').filter({ has: page.getByRole('heading', { name: 'Benedict with Bacon' }) })).toBeVisible()
 })
 
 test('every model viewer keeps the camera at least 20 degrees above the support plane while rotation and zoom stay usable', async ({ page }) => {
   await installModelViewerStub(page)
   await page.setViewportSize({ width: 1280, height: 900 })
-  await page.goto('/')
+  await page.goto('/?lang=en')
 
   for (const id of ['luxury-dining', 'modern-cafe', 'premium-fast-casual', 'social-dining']) {
     await page.locator(`#${id}`).evaluate((element) => element.scrollIntoView({ block: 'start', behavior: 'instant' }))
@@ -613,7 +639,7 @@ test('every model viewer keeps the camera at least 20 degrees above the support 
 
   await page.getByRole('button', { name: 'View in 3D: Chocolate Croissant' }).first().click()
   const modalViewer = page.getByRole('dialog').locator('model-viewer')
-  await expect(modalViewer).toHaveAttribute('camera-orbit', '20deg 68deg 105%')
+  await expect(modalViewer).toHaveAttribute('camera-orbit', '20deg 68deg 86%')
   await expect(modalViewer).toHaveAttribute('max-camera-orbit', MODEL_VIEWER_MAX_CAMERA_ORBIT)
   await expect(modalViewer).toHaveAttribute('ar', 'true')
   await expect(modalViewer).toHaveAttribute('ios-src', /\.usdz/)
@@ -621,7 +647,7 @@ test('every model viewer keeps the camera at least 20 degrees above the support 
 
 test('inline model thumbnails keep only the poster painted while loading or failed', async ({ page }) => {
   await installModelViewerStub(page, { autoLoad: false })
-  await page.goto('/')
+  await page.goto('/?lang=en')
   await page.locator('#premium-fast-casual').evaluate((element) => element.scrollIntoView({ block: 'start', behavior: 'instant' }))
   const loadingThumbnail = page.getByTestId('inline-model-fast-bigburger')
   await expect(loadingThumbnail).toHaveAttribute('data-inline-model-state', 'loading')
@@ -652,7 +678,7 @@ test('experience navigation active state follows nearest chapter at mobile and d
     { width: 1440, height: 900 },
   ]) {
     await page.setViewportSize(size)
-    await page.goto('/')
+    await page.goto('/?lang=en')
     for (const chapter of [
       ['luxury-dining', 'Luxury'],
       ['modern-cafe', 'Modern Café'],
@@ -670,7 +696,7 @@ test('experience navigation active state follows nearest chapter at mobile and d
 
 test('reduced motion still exposes primary content', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' })
-  await page.goto('/demo/social-dining')
+  await page.goto('/demo/social-dining?lang=en')
   await expect(page.locator('#social-dining')).toBeInViewport()
   await expect(page.getByRole('heading', { name: 'Built for Busy Places.' })).toBeVisible()
 })
@@ -697,7 +723,7 @@ test('Georgian names, unknown route, removed technology section, and AR loader f
   await expect(page.getByRole('link', { name: 'BetaReal-ის მთავარ გვერდზე გადასვლა' })).toBeVisible()
   await expect(page).toHaveURL(/\/unknown\?lang=ka$/)
 
-  await page.goto('/?restaurant=Demo%20Bistro')
+  await page.goto('/?lang=en&restaurant=Demo%20Bistro')
   await expect(page.getByText('ONE DISH. THREE WAYS TO EXPERIENCE IT BEFORE TASTING.')).toBeVisible()
   await expect(page.locator('#technology')).toHaveCount(0)
   await expect(page.getByRole('link', { name: '3D & AR' })).toHaveCount(0)
@@ -708,7 +734,7 @@ test('Georgian names, unknown route, removed technology section, and AR loader f
   await expect(page.getByText("AR isn't available here, so the interactive 3D view is open.").first()).toBeVisible()
   await expect(arDialog.getByRole('button', { name: 'Retry 3D viewer' })).toBeVisible()
   await expect(arDialog.getByRole('link', { name: 'Open Full Demo', exact: true })).toBeVisible()
-  await expect(arDialog.getByRole('img', { name: 'Croissant' })).toBeVisible()
+  await expect(arDialog.getByRole('img', { name: 'Chocolate Croissant' })).toBeVisible()
   await page.keyboard.press('Escape')
 
   const kaButton = page.getByRole('button', { name: 'KA' })

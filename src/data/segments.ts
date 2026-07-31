@@ -75,15 +75,15 @@ export const segments: SegmentConfig[] = [
     kicker: { en: 'Daylight, rhythm, and readable choices', ka: 'დღის შუქი, რიტმი და ადვილად აღსაქმელი მენიუ' },
     conceptLabel: { en: 'Modern café direction.', ka: 'თანამედროვე კაფეს დიზაინის კონცეფცია.' },
     body: {
-      en: 'A lighter lifestyle menu system for brunch, coffee, takeaway, and mobile browsing between tables.',
-      ka: 'მსუბუქი, თანამედროვე მენიუს სისტემა ბრანჩის, ყავისა და გატანის სერვისისთვის, რომელიც მობილურით სწრაფად და მარტივად ითვალიერება.',
+      en: 'A lighter lifestyle menu system for breakfast, coffee, takeaway, and mobile browsing between tables.',
+      ka: 'მსუბუქი, თანამედროვე მენიუს სისტემა საუზმის, ყავისა და გატანის სერვისისთვის, რომელიც მობილურით სწრაფად და მარტივად ითვალიერება.',
     },
     demoUrl: 'https://monday-greens.betareal.ge',
     primaryCta: { en: 'Open Café Demo', ka: 'კაფეს დემოს გახსნა' },
     secondaryCta: { en: 'Explore Menu Style', ka: 'მენიუს სტილის ნახვა' },
     categories: [
-      { en: 'Brunch', ka: 'ბრანჩი' },
-      { en: 'Coffee', ka: 'ყავა' },
+      { en: 'Breakfast', ka: 'საუზმე' },
+      { en: 'Main dishes', ka: 'მთავარი კერძები' },
       { en: 'Bakery', ka: 'საცხობი' },
     ],
     images: {
@@ -107,39 +107,6 @@ export const segments: SegmentConfig[] = [
     },
     items: [
       {
-        id: 'cafe-chia',
-        name: { en: 'Chia Fruit Bowl', ka: 'ჩიასა და ხილის ბოული' },
-        description: {
-          en: 'Verified Monday Greens food reference used for an illustrative brunch card.',
-          ka: 'Monday Greens-ის კერძის ფოტო, გამოყენებული ბრანჩის საილუსტრაციო ბარათზე.',
-        },
-        price: '18 ₾',
-        category: { en: 'Brunch', ka: 'ბრანჩი' },
-        image: localAssets.chapters.cafe.chia,
-      },
-      {
-        id: 'cafe-bagel',
-        name: { en: 'Scrambled Bagel', ka: 'ბეიგელი ათქვეფილი კვერცხით' },
-        description: {
-          en: 'Verified Monday Greens food reference for a compact bakery-and-brunch card.',
-          ka: 'Monday Greens-ის კერძის ფოტო, გამოყენებული საცხობისა და ბრანჩის კომპაქტურ ბარათზე.',
-        },
-        price: '16 ₾',
-        category: { en: 'Bakery', ka: 'საცხობი' },
-        image: localAssets.chapters.cafe.bagel,
-      },
-      {
-        id: 'cafe-coffee',
-        name: { en: 'Iced Coffee', ka: 'ცივი ყავა' },
-        description: {
-          en: 'Verified Monday Greens drink reference with bright, appetite-forward imagery.',
-          ka: 'Monday Greens-ის სასმლის ფოტო ნათელი, მადისაღმძვრელი ვიზუალით.',
-        },
-        price: '9 ₾',
-        category: { en: 'Coffee', ka: 'ყავა' },
-        image: localAssets.chapters.cafe.icedCoffee,
-      },
-      {
         id: 'cafe-croissant',
         name: { en: 'Chocolate Croissant', ka: 'შოკოლადის კრუასანი' },
         description: {
@@ -151,6 +118,32 @@ export const segments: SegmentConfig[] = [
         image: modelAssets.croissant.poster,
         model: modelAssets.croissant,
         badge: { en: '3D ready', ka: 'ხელმისაწვდომია 3D-ში' },
+      },
+      {
+        id: 'cafe-beef-steak',
+        name: { en: 'Beef Steak', ka: 'საქონლის სტეიკი' },
+        description: {
+          en: 'Beef steak with mushrooms and cream sauce; verified Monday Greens model and menu price.',
+          ka: 'საქონლის სტეიკი სოკოსა და ნაღების სოუსით — Monday Greens-ის დადასტურებული მოდელი და მენიუს ფასი.',
+        },
+        price: '56 ₾',
+        category: { en: 'Main dishes', ka: 'მთავარი კერძები' },
+        image: modelAssets.mondaySteak.poster,
+        model: modelAssets.mondaySteak,
+        badge: { en: 'Real Monday Greens 3D', ka: 'Monday Greens-ის რეალური 3D' },
+      },
+      {
+        id: 'cafe-benedict-bacon',
+        name: { en: 'Benedict with Bacon', ka: 'ბენედიქტი ბეკონით' },
+        description: {
+          en: 'Potato buns, bacon, Gouda, eggs, butter, cream cheese, avocado, mixed salad, and sesame.',
+          ka: 'კარტოფილის ბანი, ბეკონი, გაუდა, კვერცხი, კარაქი, კრემ-ჩიზი, ავოკადო, მიქს სალათი და სეზამი.',
+        },
+        price: '28 ₾',
+        category: { en: 'Breakfast', ka: 'საუზმე' },
+        image: modelAssets.mondayBenedict.poster,
+        model: modelAssets.mondayBenedict,
+        badge: { en: 'Real Monday Greens 3D', ka: 'Monday Greens-ის რეალური 3D' },
       },
     ],
   },

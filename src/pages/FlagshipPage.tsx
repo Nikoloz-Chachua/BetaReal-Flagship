@@ -35,6 +35,7 @@ export function FlagshipPage({ initialSegment }: FlagshipPageProps) {
   const { activeSection } = useActiveSection(initialActiveSegment)
   const activeRoute = segmentsByHash[activeSection]?.route
   const [modelItem, setModelItem] = useState<PreviewItem | null>(null)
+  const [modelSegment, setModelSegment] = useState<SegmentRoute | undefined>()
   const [arNotice, setArNotice] = useState('')
   const [arRequestKey, setArRequestKey] = useState(0)
   const [browserLocation, setBrowserLocation] = useState(() => ({
@@ -80,25 +81,33 @@ export function FlagshipPage({ initialSegment }: FlagshipPageProps) {
         }
   ), [])
 
+  const getItemSegment = useCallback(
+    (item?: PreviewItem | null) => segments.find((segment) => segment.items.some((candidate) => candidate.id === item?.id))?.route ?? activeRoute,
+    [activeRoute],
+  )
+
   const openModel = useCallback((item?: PreviewItem | null) => {
     setArNotice('')
     setArRequestKey(0)
+    setModelSegment(getItemSegment(item))
     setModelItem(getModelItem(item))
-  }, [getModelItem])
+  }, [getItemSegment, getModelItem])
 
   const openAR = useCallback(
     (item?: PreviewItem | null) => {
       const target = getModelItem(item)
+      const targetSegment = getItemSegment(item)
       if (target.model?.usdz && supportsQuickLook()) {
-        trackEvent('ar_button_clicked', { segment: activeRoute, ...getTrackingContext() })
+        trackEvent('ar_button_clicked', { segment: targetSegment, ...getTrackingContext() })
         openQuickLook(target.model.usdz)
         return
       }
       setArNotice('')
+      setModelSegment(targetSegment)
       setModelItem(target)
       setArRequestKey((current) => current + 1)
     },
-    [activeRoute, getModelItem],
+    [getItemSegment, getModelItem],
   )
 
   useEffect(() => {
@@ -159,13 +168,14 @@ export function FlagshipPage({ initialSegment }: FlagshipPageProps) {
         title={language === 'ka' ? '3D და AR გამოცდილება' : '3D and AR experience'}
         onClose={() => {
           setModelItem(null)
+          setModelSegment(undefined)
           setArRequestKey(0)
         }}
         labelledBy="model-modal-title"
         closeLabel={t.model.close}
       >
         {modelItem?.model ? (
-          <div style={{ padding: 20 }}>
+          <div style={{ padding: 14 }}>
             <h2 id="model-modal-title" style={{ margin: '0 0 12px', fontSize: 'clamp(1.8rem, 4vw, 3.2rem)', lineHeight: 1 }}>
               {modelItem.name[language]}
             </h2>
@@ -173,11 +183,11 @@ export function FlagshipPage({ initialSegment }: FlagshipPageProps) {
             <ModelExperience
               model={modelItem.model}
               language={language}
-              segment={activeRoute}
+              segment={modelSegment}
               active
               arRequestKey={arRequestKey}
               onARFallback={() => setArNotice(t.model.arUnsupported)}
-              fallbackDemoUrl={activeRoute ? segmentsByRoute[activeRoute].demoUrl : undefined}
+              fallbackDemoUrl={modelSegment ? segmentsByRoute[modelSegment].demoUrl : undefined}
               fallbackDemoLabel={t.demo.openFull}
             />
           </div>

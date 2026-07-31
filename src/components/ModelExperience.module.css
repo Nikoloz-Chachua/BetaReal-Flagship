@@ -36,7 +36,7 @@
 
 .viewer {
   width: 100%;
-  min-height: 340px;
+  min-height: 410px;
   background: transparent;
 }
 
@@ -77,6 +77,18 @@
 .errorAction a {
   justify-self: start;
   color: var(--ink);
+  font-weight: 780;
+}
+
+.fallbackLink {
+  position: absolute;
+  left: 18px;
+  bottom: 74px;
+  z-index: 3;
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  padding: 10px 14px;
   font-weight: 780;
 }
 
@@ -122,6 +134,23 @@
   .viewerWrap,
   .posterOnly img,
   .viewer {
-    min-height: 260px;
+    min-height: 400px;
+  }
+}
+
+@media (max-height: 650px) {
+  .posterOnly,
+  .viewerWrap,
+  .posterOnly img,
+  .viewer {
+    min-height: 250px;
+  }
+
+  .controls {
+    padding-block: 8px;
+  }
+
+  .controls p {
+    font-size: 0.78rem;
   }
 }

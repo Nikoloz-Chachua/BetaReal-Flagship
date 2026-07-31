@@ -64,7 +64,14 @@ export function ExperienceChapter({ segment, language, labels, onModelOpen, onAR
               <ExternalLink size={17} aria-hidden="true" />
               <span className="sr-only">({labels.external})</span>
             </a>
-            <button type="button" onClick={() => onModelOpen(segment.items.find((item) => item.model) ?? segment.items[0])}>
+            <button
+              type="button"
+              onClick={() => {
+                const item = segment.items.find((candidate) => candidate.model) ?? segment.items[0]
+                if (segment.route === 'social-dining') onAROpen(item)
+                else onModelOpen(item)
+              }}
+            >
               {segment.secondaryCta[language]}
             </button>
           </div>

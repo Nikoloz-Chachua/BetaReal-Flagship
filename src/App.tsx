@@ -16,7 +16,8 @@ export default function App() {
 }
 
 function NotFound() {
-  const language = new URLSearchParams(window.location.search).get('lang') === 'ka' ? 'ka' : 'en'
+  const requestedLanguage = new URLSearchParams(window.location.search).get('lang')
+  const language = requestedLanguage === 'en' ? 'en' : 'ka'
   const text =
     language === 'ka'
       ? {

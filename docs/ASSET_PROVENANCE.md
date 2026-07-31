@@ -33,3 +33,5 @@ Production BetaReal model geometry assets are referenced directly from R2:
 - Burger GLB/USDZ: `https://pub-3c68559de18f4aee94d127e180937bdd.r2.dev/druidi_balanced_30k_2k.glb`, `https://pub-3c68559de18f4aee94d127e180937bdd.r2.dev/druidi_balanced_30k_2k.usdz`
 - Hot dog GLB/USDZ: `https://pub-3c68559de18f4aee94d127e180937bdd.r2.dev/hot_dog_draco.glb`, `https://pub-3c68559de18f4aee94d127e180937bdd.r2.dev/hot_dog.usdz`
 - Croissant GLB/USDZ: `https://pub-3c68559de18f4aee94d127e180937bdd.r2.dev/croissant_draco.glb`, `https://pub-3c68559de18f4aee94d127e180937bdd.r2.dev/croissant.usdz`
+- Monday Greens Beef Steak GLB/USDZ/poster: live `monday-greens` tenant rows in the BetaReal Supabase API (`1784567265438_steak-with-mushroom-sauce-28cm.glb`, `1784567271842_steak-with-mushroom-sauce-28cm.usdz`, `1784797864072_IMG_4409.webp`).
+- Monday Greens Benedict with Bacon GLB/USDZ/poster: live `monday-greens` tenant rows in the BetaReal Supabase API (`1784565245600_eggs-benedict-with-ham-28cm.glb`, `1784565253451_eggs-benedict-with-ham-28cm.usdz`, Wolt menu poster `f3073162-c4e9-11ee-bcc0-96b5e0412694_161a2156.jpg`).

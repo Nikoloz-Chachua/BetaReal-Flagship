@@ -161,7 +161,7 @@ export function ModelViewer({
       ) : (
         <model-viewer
           ref={setViewerRef}
-          className={styles.viewer}
+          class={styles.viewer}
           src={model.glb}
           poster={model.poster}
           ios-src={model.usdz}
@@ -175,7 +175,7 @@ export function ModelViewer({
           auto-rotate="true"
           shadow-intensity="1"
           exposure="0.92"
-          camera-orbit="20deg 68deg 105%"
+          camera-orbit="20deg 68deg 86%"
           max-camera-orbit={MODEL_VIEWER_MAX_CAMERA_ORBIT}
           interaction-prompt="auto"
         />
@@ -191,7 +191,16 @@ export function ModelViewer({
           <span>{text.model.arCta}</span>
         </button>
       </div>
-      {unsupported ? <UnsupportedARState label={text.model.arUnsupported} /> : null}
+      {unsupported ? (
+        <>
+          <UnsupportedARState label={text.model.arUnsupported} />
+          {!error && fallbackDemoUrl ? (
+            <a className={styles.fallbackLink} href={fallbackDemoUrl} target="_blank" rel="noopener noreferrer">
+              {fallbackDemoLabel ?? text.demo.openFull}
+            </a>
+          ) : null}
+        </>
+      ) : null}
     </div>
   )
 }

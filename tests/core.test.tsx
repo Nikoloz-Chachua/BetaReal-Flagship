@@ -77,7 +77,7 @@ beforeEach(() => {
   MockIntersectionObserver.instances = []
   HTMLElement.prototype.scrollIntoView = vi.fn()
   document.head.querySelectorAll('script[data-betareal-model-viewer]').forEach((script) => script.remove())
-  window.history.replaceState({}, '', '/')
+  window.history.replaceState({}, '', '/?lang=en')
   window.dataLayer = []
   resetAnalyticsDedupeForTests()
   vi.stubGlobal('IntersectionObserver', MockIntersectionObserver)
@@ -176,7 +176,7 @@ describe('personalization', () => {
   })
 
   it('renders dismissible safe prospect banner', async () => {
-    window.history.replaceState({}, '', '/?restaurant=Demo%20Bistro')
+    window.history.replaceState({}, '', '/?lang=en&restaurant=Demo%20Bistro')
     render(<FlagshipPage />)
     expect(screen.getByText('Demo Bistro')).toBeInTheDocument()
     await userEvent.click(screen.getByLabelText('Dismiss personalized banner'))
@@ -185,6 +185,24 @@ describe('personalization', () => {
 })
 
 describe('language and model loading', () => {
+  it('defaults the first load and accessible labels to Georgian', () => {
+    window.history.replaceState({}, '', '/')
+    render(<FlagshipPage initialSegment="cafe" />)
+    expect(document.documentElement).toHaveAttribute('lang', 'ka')
+    expect(screen.getByRole('heading', { name: 'თქვენი მენიუ ეკრანს მიღმა.' })).toBeInTheDocument()
+    expect(screen.getAllByText('თქვენი რესტორანი').length).toBeGreaterThan(0)
+    expect(screen.getByRole('navigation', { name: 'ძირითადი ნავიგაცია' })).toBeInTheDocument()
+  })
+
+  it('defines exactly three real model dishes in the Monday Greens preview without Brunch', () => {
+    const cafe = segments.find((segment) => segment.route === 'cafe')
+    expect(cafe?.categories.flatMap((category) => [category.en, category.ka])).not.toContain('Brunch')
+    expect(JSON.stringify(cafe)).not.toMatch(/brunch|ბრანჩი/i)
+    expect(cafe?.items.map((item) => item.name.en)).toEqual(['Chocolate Croissant', 'Beef Steak', 'Benedict with Bacon'])
+    expect(cafe?.items.every((item) => item.model?.glb && item.model.usdz && item.model.poster)).toBe(true)
+    expect(cafe?.items.map((item) => item.price)).toEqual(['2.5 ₾', '56 ₾', '28 ₾'])
+  })
+
   it('switches visible content to Georgian and preserves route access', async () => {
     const description = document.createElement('meta')
     description.name = 'description'
@@ -254,19 +272,16 @@ describe('language and model loading', () => {
     await expect(second).resolves.toBe(false)
   })
 
-  it('keeps photo-only dishes static while preserving real model controls', async () => {
+  it('gives all three Monday Greens dishes real per-item model controls', async () => {
     render(<FlagshipPage initialSegment="cafe" />)
     const cafeDemo = screen.getByTestId('modern-cafe-demo')
-    const photo = within(cafeDemo).getByRole('img', { name: 'Chia Fruit Bowl' })
-    expect(photo.closest('button')).toBeNull()
-    expect(within(cafeDemo).queryByRole('button', { name: 'Details: Chia Fruit Bowl' })).not.toBeInTheDocument()
-    expect(within(cafeDemo).queryByTestId('inline-model-cafe-chia')).not.toBeInTheDocument()
     expect(within(cafeDemo).getByLabelText('Preview categories').querySelectorAll('button')).toHaveLength(0)
-
-    await userEvent.click(photo)
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
-    expect(within(cafeDemo).getByRole('button', { name: 'View in 3D: Chocolate Croissant' })).toBeInTheDocument()
-    expect(within(cafeDemo).getByRole('button', { name: 'Place in AR: Chocolate Croissant' })).toBeInTheDocument()
+    for (const name of ['Chocolate Croissant', 'Beef Steak', 'Benedict with Bacon']) {
+      expect(within(cafeDemo).getByRole('button', { name: `View in 3D: ${name}` })).toBeInTheDocument()
+      expect(within(cafeDemo).getByRole('button', { name: `Place in AR: ${name}` })).toBeInTheDocument()
+    }
+    await userEvent.click(within(cafeDemo).getByRole('button', { name: 'View in 3D: Beef Steak' }))
+    expect(within(screen.getByRole('dialog')).getByRole('heading', { name: 'Beef Steak' })).toBeInTheDocument()
   })
 
   it('lazy-loads inline model thumbnails only after a model card enters the observer', async () => {
@@ -332,7 +347,7 @@ describe('language and model loading', () => {
       if (!element) throw new Error('modal model-viewer was not rendered')
       return element
     })
-    expect(fullViewer).toHaveAttribute('camera-orbit', '20deg 68deg 105%')
+    expect(fullViewer).toHaveAttribute('camera-orbit', '20deg 68deg 86%')
     expect(fullViewer).toHaveAttribute('max-camera-orbit', MODEL_VIEWER_MAX_CAMERA_ORBIT)
     expect(fullViewer).toHaveAttribute('ar', 'true')
     expect(fullViewer).toHaveAttribute('ios-src', expect.stringContaining('.usdz'))
@@ -563,7 +578,7 @@ describe('AR and routing behavior', () => {
     script.dispatchEvent(new Event('error'))
     await waitFor(() => expect(screen.getByRole('dialog')).toBeVisible())
     expect(screen.getAllByText("AR isn't available here, so the interactive 3D view is open.").length).toBeGreaterThan(0)
-    expect(within(screen.getByRole('dialog')).getByRole('img', { name: 'Croissant' })).toBeVisible()
+    expect(within(screen.getByRole('dialog')).getByRole('img', { name: 'Chocolate Croissant' })).toBeVisible()
     expect(screen.getByRole('button', { name: 'Retry 3D viewer' })).toBeVisible()
     expect(screen.getByRole('link', { name: 'Open Full Demo' })).toHaveAttribute('href', 'https://restaurant-ar.pages.dev/?tenant=b-main')
   })
@@ -578,8 +593,21 @@ describe('AR and routing behavior', () => {
     expect(screen.getAllByText("AR isn't available here, so the interactive 3D view is open.").length).toBeGreaterThan(0)
   })
 
+  it('turns a rejected native AR activation into the shared 3D fallback', async () => {
+    vi.spyOn(modelViewer, 'ensureModelViewerScript').mockResolvedValue(true)
+    vi.spyOn(modelViewer, 'launchModelViewerAR').mockResolvedValue(false)
+    render(<FlagshipPage initialSegment="cafe" />)
+    const cafeDemo = screen.getByTestId('modern-cafe-demo')
+    await userEvent.click(within(cafeDemo).getByRole('button', { name: 'Place in AR: Beef Steak' }))
+    const dialog = await screen.findByRole('dialog')
+    expect(within(dialog).getByRole('heading', { name: 'Beef Steak' })).toBeVisible()
+    await waitFor(() => expect(modelViewer.launchModelViewerAR).toHaveBeenCalled())
+    expect(within(dialog).getAllByText("AR isn't available here, so the interactive 3D view is open.")).toHaveLength(2)
+    expect(within(dialog).getByRole('link', { name: 'Open Full Demo' })).toHaveAttribute('href', 'https://monday-greens.betareal.ge')
+  })
+
   it('renders an accessible unknown-route state without mutating history during render', () => {
-    window.history.replaceState({}, '', '/missing-page?x=1#bad')
+    window.history.replaceState({}, '', '/missing-page?lang=en&x=1#bad')
     render(<App />)
     expect(screen.getByRole('heading', { name: 'Page not found' })).toBeInTheDocument()
     expect(window.location.pathname).toBe('/missing-page')
