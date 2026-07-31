@@ -2,6 +2,7 @@ import { expect, test, type Page } from '@playwright/test'
 
 const MODEL_VIEWER_MAX_CAMERA_ORBIT = 'auto 70deg auto'
 const MODEL_VIEWER_MAX_POLAR_DEG = 70
+const BURGER_MAX_CAMERA_ORBIT = 'auto 87deg auto'
 
 declare global {
   interface Window {
@@ -59,6 +60,7 @@ test('hero phone 3D and AR buttons open and activate the shared burger experienc
   await phone.getByRole('button', { name: 'View in 3D: BigBurger' }).click()
   let dialog = page.getByRole('dialog')
   await expect(dialog.getByRole('heading', { name: 'BigBurger' })).toBeVisible()
+  await expect(dialog.locator('model-viewer')).toHaveAttribute('max-camera-orbit', BURGER_MAX_CAMERA_ORBIT)
   await dialog.getByRole('button', { name: 'Close 3D viewer' }).click()
 
   await phone.getByRole('button', { name: 'Place in AR: BigBurger' }).click()
@@ -615,7 +617,7 @@ test('Monday Greens model thumbnails preserve card media geometry and open the c
   await expect(page.getByRole('dialog').filter({ has: page.getByRole('heading', { name: 'Benedict with Bacon' }) })).toBeVisible()
 })
 
-test('every model viewer keeps the camera at least 20 degrees above the support plane while rotation and zoom stay usable', async ({ page }) => {
+test('burger reaches a near-table angle while other models keep safer camera floors and zoom stays usable', async ({ page }) => {
   await installModelViewerStub(page)
   await page.setViewportSize({ width: 1280, height: 900 })
   await page.goto('/?lang=en')
@@ -631,8 +633,23 @@ test('every model viewer keeps the camera at least 20 degrees above the support 
   for (let index = 0; index < inlineCount; index += 1) {
     const viewer = inlineViewers.nth(index)
     await expect(viewer).toHaveAttribute('camera-controls', 'true')
-    await expect(viewer).toHaveAttribute('max-camera-orbit', MODEL_VIEWER_MAX_CAMERA_ORBIT)
+    const src = await viewer.getAttribute('src')
+    await expect(viewer).toHaveAttribute(
+      'max-camera-orbit',
+      src?.includes('druidi_balanced_30k_2k.glb') ? BURGER_MAX_CAMERA_ORBIT : MODEL_VIEWER_MAX_CAMERA_ORBIT,
+    )
   }
+
+  const burgerViewer = page.getByTestId('inline-model-hero-bigburger').locator('model-viewer')
+  await burgerViewer.scrollIntoViewIfNeeded()
+  const burgerBox = await burgerViewer.boundingBox()
+  expect(burgerBox).not.toBeNull()
+  await page.mouse.move(burgerBox!.x + burgerBox!.width / 2, burgerBox!.y + burgerBox!.height / 2)
+  await page.mouse.down()
+  await page.mouse.move(burgerBox!.x, burgerBox!.y + burgerBox!.height, { steps: 8 })
+  await page.mouse.up()
+  const burgerOrbit = await burgerViewer.evaluate((element) => (element as unknown as { getCameraOrbit: () => { phi: string } }).getCameraOrbit())
+  expect(Number.parseFloat(burgerOrbit.phi)).toBeCloseTo(87, 3)
 
   const thumbnail = page.getByTestId('inline-model-cafe-croissant')
   await thumbnail.scrollIntoViewIfNeeded()

@@ -6,8 +6,8 @@ import type { Language } from '../data/types'
 import { getTrackingContext, trackEvent } from '../lib/analytics'
 import {
   ensureModelViewerScript,
+  getModelViewerMaxCameraOrbit,
   launchModelViewerAR,
-  MODEL_VIEWER_MAX_CAMERA_ORBIT,
   openQuickLook,
   supportsQuickLook,
   type ModelViewerARElement,
@@ -176,7 +176,7 @@ export function ModelViewer({
           shadow-intensity="1"
           exposure="0.92"
           camera-orbit="20deg 68deg 86%"
-          max-camera-orbit={MODEL_VIEWER_MAX_CAMERA_ORBIT}
+          max-camera-orbit={getModelViewerMaxCameraOrbit(model.maxPolarAngleDeg)}
           interaction-prompt="auto"
         />
       )}

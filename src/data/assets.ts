@@ -41,6 +41,7 @@ export const modelAssets = {
     usdz: 'https://pub-3c68559de18f4aee94d127e180937bdd.r2.dev/druidi_balanced_30k_2k.usdz',
     poster: localAsset('/assets/models/burger_poster.webp'),
     scale: 1.5181,
+    maxPolarAngleDeg: 87,
   },
   hotDog: {
     name: 'Hot Dog',

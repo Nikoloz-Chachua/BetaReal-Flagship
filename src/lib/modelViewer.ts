@@ -1,5 +1,10 @@
 const MODEL_VIEWER_SRC = 'https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js'
 export const MODEL_VIEWER_MAX_CAMERA_ORBIT = 'auto 70deg auto'
+export function getModelViewerMaxCameraOrbit(maxPolarAngleDeg?: number) {
+  return maxPolarAngleDeg === undefined
+    ? MODEL_VIEWER_MAX_CAMERA_ORBIT
+    : `auto ${maxPolarAngleDeg}deg auto`
+}
 let loadPromise: Promise<boolean> | null = null
 
 export function isModelViewerDefined() {

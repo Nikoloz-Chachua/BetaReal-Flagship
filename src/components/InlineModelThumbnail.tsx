@@ -4,7 +4,7 @@ import { useCallback, useEffect, useId, useRef, useState } from 'react'
 import type { Language, ModelAsset, SegmentRoute } from '../data/types'
 import { copy } from '../data/i18n'
 import { getTrackingContext, trackEvent } from '../lib/analytics'
-import { ensureModelViewerScript, MODEL_VIEWER_MAX_CAMERA_ORBIT } from '../lib/modelViewer'
+import { ensureModelViewerScript, getModelViewerMaxCameraOrbit } from '../lib/modelViewer'
 import styles from './DemoPreview.module.css'
 
 interface InlineModelThumbnailProps {
@@ -151,7 +151,7 @@ export function InlineModelThumbnail({ model, itemId, label, language, segment, 
           shadow-intensity="1"
           exposure="0.94"
           camera-orbit={camera.orbit}
-          max-camera-orbit={MODEL_VIEWER_MAX_CAMERA_ORBIT}
+          max-camera-orbit={getModelViewerMaxCameraOrbit(model.maxPolarAngleDeg)}
           field-of-view={camera.fov}
           scale={`${model.scale} ${model.scale} ${model.scale}`}
           interaction-prompt="none"

@@ -20,6 +20,7 @@ export interface ModelAsset {
   usdz: string
   poster: string
   scale: number
+  maxPolarAngleDeg?: number
 }
 
 export interface PreviewItem {

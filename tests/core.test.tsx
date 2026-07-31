@@ -9,7 +9,13 @@ import { FlagshipPage } from '../src/pages/FlagshipPage'
 import { localAssets } from '../src/data/assets'
 import { segmentRoutes, segments } from '../src/data/segments'
 import { resetAnalyticsDedupeForTests, trackEvent } from '../src/lib/analytics'
-import { ensureModelViewerScript, launchModelViewerAR, MODEL_VIEWER_MAX_CAMERA_ORBIT, type ModelViewerARElement } from '../src/lib/modelViewer'
+import {
+  ensureModelViewerScript,
+  getModelViewerMaxCameraOrbit,
+  launchModelViewerAR,
+  MODEL_VIEWER_MAX_CAMERA_ORBIT,
+  type ModelViewerARElement,
+} from '../src/lib/modelViewer'
 import * as modelViewer from '../src/lib/modelViewer'
 import { sanitizeRestaurantParam, sanitizeTrackingParam } from '../src/lib/personalization'
 import { normalizeBasePath, stripBasePath, withBasePath } from '../src/lib/basePath'
@@ -235,6 +241,7 @@ describe('language and model loading', () => {
     await userEvent.click(within(phone).getByRole('button', { name: 'View in 3D: BigBurger' }))
     let dialog = await screen.findByRole('dialog')
     expect(within(dialog).getByRole('heading', { name: 'BigBurger' })).toBeVisible()
+    expect(dialog.querySelector('model-viewer')).toHaveAttribute('max-camera-orbit', getModelViewerMaxCameraOrbit(87))
     await userEvent.click(within(dialog).getByRole('button', { name: 'Close 3D viewer' }))
 
     await userEvent.click(within(phone).getByRole('button', { name: 'Place in AR: BigBurger' }))
@@ -269,7 +276,7 @@ describe('language and model loading', () => {
     })
     expect(viewer).toHaveAttribute('src', expect.stringContaining('druidi_balanced_30k_2k.glb'))
     expect(viewer).toHaveAttribute('camera-controls', 'true')
-    expect(viewer).toHaveAttribute('max-camera-orbit', MODEL_VIEWER_MAX_CAMERA_ORBIT)
+    expect(viewer).toHaveAttribute('max-camera-orbit', getModelViewerMaxCameraOrbit(87))
     expect(viewer).toHaveAttribute('touch-action', 'pan-y')
     expect(viewer).not.toHaveAttribute('poster')
   })
@@ -343,7 +350,7 @@ describe('language and model loading', () => {
     expect(thumbnail.querySelector('img[alt="Chocolate Croissant"]')).toBeInTheDocument()
   })
 
-  it('keeps every rendered model-viewer camera at least 20 degrees above the support plane', async () => {
+  it('uses a near-table burger orbit while preserving safer caps for other models', async () => {
     vi.spyOn(modelViewer, 'ensureModelViewerScript').mockResolvedValue(true)
 
     render(<FlagshipPage initialSegment="cafe" />)
@@ -354,7 +361,10 @@ describe('language and model loading', () => {
     })
     for (const viewer of Array.from(document.querySelectorAll('model-viewer'))) {
       expect(viewer).toHaveAttribute('camera-controls', 'true')
-      expect(viewer).toHaveAttribute('max-camera-orbit', MODEL_VIEWER_MAX_CAMERA_ORBIT)
+      const expectedOrbit = viewer.getAttribute('src')?.includes('druidi_balanced_30k_2k.glb')
+        ? getModelViewerMaxCameraOrbit(87)
+        : MODEL_VIEWER_MAX_CAMERA_ORBIT
+      expect(viewer).toHaveAttribute('max-camera-orbit', expectedOrbit)
     }
 
     await userEvent.click(screen.getAllByRole('button', { name: 'View in 3D: Chocolate Croissant' })[0])
