@@ -16,7 +16,7 @@ export const segments: SegmentConfig[] = [
       en: 'A spacious menu direction for restaurants where atmosphere, plating, and service details matter as much as the order.',
       ka: 'სივრცეზე ორიენტირებული, დახვეწილი მენიუს კონცეფცია რესტორნებისთვის, სადაც ატმოსფერო, კერძის გაფორმება და მომსახურების დეტალები შეკვეთაზე არანაკლებ მნიშვნელოვანია.',
     },
-    demoUrl: 'https://restaurant-ar.pages.dev/?tenant=b-main',
+    demoUrl: 'https://restaurant-ar.pages.dev/?tenant=luxury',
     primaryCta: { en: 'Open Luxury Demo', ka: 'პრემიუმ დემოს გახსნა' },
     secondaryCta: { en: 'See 3D Dessert', ka: 'დესერტის 3D ნახვა' },
     categories: [
@@ -232,7 +232,7 @@ export const segments: SegmentConfig[] = [
       en: 'An industrial menu system for high-volume ordering moments, with big categories and immediate product recognition.',
       ka: 'ინდუსტრიული სტილის მენიუს სისტემა მაღალი დატვირთვისას შეკვეთების მისაღებად, დიდი კატეგორიებითა და კერძების მყისიერად ამოსაცნობი ვიზუალებით.',
     },
-    demoUrl: 'https://restaurant-ar.pages.dev/?tenant=pipes-burger-main',
+    demoUrl: 'https://restaurant-ar.pages.dev/?tenant=social-dining',
     primaryCta: { en: 'Open Social Demo', ka: 'თავშეყრის სივრცის დემოს გახსნა' },
     secondaryCta: { en: 'See the AR Experience', ka: 'AR გამოცდილების გამოცდა' },
     categories: [

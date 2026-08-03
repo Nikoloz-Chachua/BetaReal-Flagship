@@ -607,7 +607,7 @@ describe('AR and routing behavior', () => {
     expect(screen.getAllByText("AR isn't available here, so the interactive 3D view is open.").length).toBeGreaterThan(0)
     expect(within(screen.getByRole('dialog')).getByRole('img', { name: 'Chocolate Croissant' })).toBeVisible()
     expect(screen.getByRole('button', { name: 'Retry 3D viewer' })).toBeVisible()
-    expect(screen.getByRole('link', { name: 'Open Full Demo' })).toHaveAttribute('href', 'https://restaurant-ar.pages.dev/?tenant=b-main')
+    expect(screen.getByRole('link', { name: 'Open Full Demo' })).toHaveAttribute('href', 'https://restaurant-ar.pages.dev/?tenant=luxury')
   })
 
   it('keeps the AR fallback notice visible after opening the model modal', async () => {

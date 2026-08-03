@@ -35,10 +35,10 @@ Standalone Vite + React + TypeScript sales/demo platform for `https://yourrestau
 
 ## Demo URL Map
 
-- Fine Dining & Luxury: `https://restaurant-ar.pages.dev/?tenant=b-main`
+- Fine Dining & Luxury: `https://restaurant-ar.pages.dev/?tenant=luxury`
 - Modern Café & Lifestyle: `https://monday-greens.betareal.ge`
 - Premium Fast Casual: `https://restaurant-ar.pages.dev/?tenant=mugsy-main`
-- Social Dining: `https://restaurant-ar.pages.dev/?tenant=pipes-burger-main`
+- Social Dining: `https://restaurant-ar.pages.dev/?tenant=social-dining`
 
 ## Notes And Limitations
 
