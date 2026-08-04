@@ -9,8 +9,8 @@ All copied assets came from `/home/gagi/Restaurant-AR-flagship`, which was inspe
 | `public/assets/brand/betareal-logo-white.png` | `img/betareal-logo-white.png` | Dark footer brand mark |
 | `public/assets/brand/betareal-logo-official.png` | User-provided downloaded official BetaReal logo asset | Current visible header, drawer, and footer BetaReal brand mark |
 | `public/favicon.svg` | `img/betareal-favicon.svg` | Site favicon |
-| `public/assets/chapters/luxury/interior-enhanced-wide.webp` | User-provided enhanced landscape asset | Active luxury dining hero atmosphere image; no client implication |
-| `public/assets/chapters/luxury/interior-enhanced-portrait.webp` | User-provided enhanced portrait asset | Active luxury dining supporting atmosphere image; no client implication |
+| `public/assets/chapters/luxury/interior-enhanced-wide.webp` | User-provided `ChatGPT Image Aug 3, 2026, 10_07_52 PM (2).png` (`cee702a28e184e561bfe49687ded76405586d18925beebc784a49917559d04dc`) | Active luxury dining hero atmosphere image; optimized WebP `3237a77292fc401cf6a9b380bbf7ef4d0c48e1d8f4fd32f2e091d89acd406755`; no client implication |
+| `public/assets/chapters/luxury/interior-enhanced-portrait.webp` | User-provided `ChatGPT Image Aug 3, 2026, 10_07_53 PM (3).png` (`69178898ba042c7d63821401e9fc400236900cf9c67312ab6d49ebd15b30759b`) | Active luxury dining supporting atmosphere image; optimized WebP `b733d0f713581722219f5ccd1de9864642338cf1c33b6a49d22e914e1026fd5b`; no client implication |
 | `public/assets/chapters/luxury/interior-hero-maps.webp` | `img/baoma/interior-hero-maps.webp` | Legacy luxury atmosphere image retained in assets, no longer used by the visible flagship |
 | `public/assets/chapters/luxury/interior-terrace.jpg` | `img/baoma/interior-terrace.jpg` | Legacy luxury supporting image retained in assets, no longer used by the visible flagship |
 | `public/assets/chapters/luxury/dishes/trout-pomegranate.webp` | `/home/gagi/Restaurant-AR-flagship/img/baoma/dishes/trout-pomegranate.webp` | Legacy local food reference retained in assets, no longer used by visible luxury dish cards |

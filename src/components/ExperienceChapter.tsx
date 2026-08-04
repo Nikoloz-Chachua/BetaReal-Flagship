@@ -21,8 +21,8 @@ interface ExperienceChapterProps {
 }
 
 export function ExperienceChapter({ segment, language, labels, onModelOpen, onAROpen }: ExperienceChapterProps) {
-  const heroImageSize = segment.route === 'luxury' ? { width: 1498, height: 1050 } : { width: 1125, height: 822 }
-  const supportImageSize = segment.route === 'luxury' ? { width: 1122, height: 1402 } : { width: 900, height: 675 }
+  const heroImageSize = segment.route === 'luxury' ? { width: 1254, height: 1254 } : { width: 1125, height: 822 }
+  const supportImageSize = segment.route === 'luxury' ? { width: 1024, height: 1536 } : { width: 900, height: 675 }
   const vars = {
     '--chapter-bg': segment.theme.background,
     '--chapter-surface': segment.theme.surface,
